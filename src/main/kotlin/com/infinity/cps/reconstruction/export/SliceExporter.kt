@@ -37,23 +37,15 @@ object SliceExporter {
             writer.println()
 
             for (edge in data.ddgEdges) {
-                val parts = edge.split("|")
-                val src = parts[0].toInt()
-                val dst = parts[1].toInt()
-                if (src in slice.chop && dst in slice.chop) {
-                    val varName = if (parts.size > 2) parts[2] else ""
-                    writer.println("  $src -> $dst [color=\"green\", label=\"$varName\", style=dashed];")
+                if (edge.src in slice.chop && edge.dst in slice.chop) {
+                    writer.println("  ${edge.src} -> ${edge.dst} [color=\"green\", label=\"${edge.variable ?: ""}\", style=dashed];")
                 }
             }
 
             for (edge in data.cdgEdges) {
-                val parts = edge.split("|")
-                val src = parts[0].toInt()
-                val dst = parts[1].toInt()
-                if (src in slice.chop && dst in slice.chop) {
-                    val cond = if (parts.size > 2) parts[2] else ""
-                    val labelAttr = if (cond.isEmpty()) "" else ", label=\"$cond\""
-                    writer.println("  $src -> $dst [color=\"red\", style=dotted$labelAttr];")
+                if (edge.src in slice.chop && edge.dst in slice.chop) {
+                    val labelAttr = if (edge.condition.isNullOrEmpty()) "" else ", label=\"${edge.condition}\""
+                    writer.println("  ${edge.src} -> ${edge.dst} [color=\"red\", style=dotted$labelAttr];")
                 }
             }
 

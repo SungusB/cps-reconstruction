@@ -1,30 +1,54 @@
 package com.infinity.cps.reconstruction.cpg
 
+import com.infinity.cps.reconstruction.ast.JimpleAstBuilder
+import com.infinity.cps.reconstruction.ast.JimpleAstNode
+import sootup.core.graph.StmtGraph
 import sootup.core.jimple.basic.Local
 import sootup.core.jimple.basic.LValue
 import sootup.core.jimple.common.expr.AbstractInstanceInvokeExpr
-import sootup.core.jimple.common.expr.AbstractInvokeExpr
 import sootup.core.jimple.common.stmt.JAssignStmt
 import sootup.core.jimple.common.stmt.JInvokeStmt
 import sootup.core.jimple.common.stmt.Stmt
 import sootup.core.model.SootMethod
-import java.util.LinkedList
 
 /**
- * A Code Property Graph (CPG) for a single method.
+ * A Code Property Graph (CPG) for a single method, following the definition
+ * of Yamaguchi et al. ("Modeling and Discovering Vulnerabilities with Code
+ * Property Graphs", IEEE S&P 2014): a CPG merges four program
+ * representations into one graph over a shared node space:
+ * - **Abstract Syntax Tree (AST)** — the syntactic structure of each
+ *   statement, built from Jimple by [JimpleAstBuilder] ([astNodes]/[astEdges])
+ * - **Control Flow Graph (CFG)** — possible execution paths between
+ *   statements ([cfgEdges])
+ * - **Control Dependence Graph (CDG)** — which statements control whether
+ *   others execute ([cdgEdges])
+ * - **Data Dependence Graph (DDG)** — data flow from a variable definition to
+ *   its uses ([ddgEdges])
  *
- * A CPG merges three program representations:
- * - **Control Flow Graph (CFG)** — possible execution paths between statements
- * - **Data Dependence Graph (DDG)** — data flow from a variable definition to its uses
- * - **Control Dependence Graph (CDG)** — which statements control whether others execute
+ * (CDG and DDG together are the Program Dependence Graph, the PDG, in the
+ * original CPG formulation.)
  *
- * Edges are stored as strings in `"src|dst"` or `"src|dst|label"` format.
- * Statements are indexed from 0, with a virtual exit node at index `n`
- * (the statement count).
+ * Statements are indexed from 0, with a virtual exit node at index `n` (the
+ * statement count). AST nodes live in a disjoint id space
+ * ([JimpleAstNode.ID_OFFSET] and up) so the two node kinds can share one
+ * edge type; [bindingEdges] is the fusion edge connecting each statement to
+ * the root of its own AST subtree (exact, since the AST is built from the
+ * same Jimple statement — see [JimpleAstBuilder]'s doc comment for why this
+ * tool builds the AST from the IR rather than from Kotlin source).
  *
- * The CDG is built using the Cytron et al. dominance frontier algorithm,
- * with immediate post-dominators computed via the Cooper-Harvey-Kennedy
- * iterative algorithm.
+ * The CDG is built using the Cytron et al. dominance frontier algorithm
+ * (Cytron, Ferrante, Rosen, Wegman, Zadeck, "Efficiently Computing Static
+ * Single Assignment Form and the Control Dependence Graph", TOPLAS 1991),
+ * with immediate post-dominators computed via the iterative
+ * Cooper-Harvey-Kennedy algorithm ("A Simple, Fast Dominance Algorithm",
+ * 2001). The DDG is built via the standard iterative reaching-definitions
+ * dataflow analysis (Kildall 1973; Aho, Lam, Sethi, Ullman, "Compilers:
+ * Principles, Techniques, and Tools", Ch. 9) run to a fixpoint over the CFG,
+ * rather than a per-definition graph search — the fixpoint formulation is
+ * what makes it correct at CFG joins (a diamond where one branch redefines a
+ * variable and the other doesn't): a definition's reach at a join is the
+ * union of what reaches it along every incoming path, computed
+ * simultaneously, not path-at-a-time.
  *
  * Instances are created via [fromMethod].
  */
@@ -38,58 +62,119 @@ class CpgData {
     /** Source line numbers for each statement (-1 if unknown). */
     val stmtLines: MutableList<Int> = mutableListOf()
 
-    val cfgEdges: MutableSet<String> = linkedSetOf()
-    val ddgEdges: MutableSet<String> = linkedSetOf()
-    val cdgEdges: MutableSet<String> = linkedSetOf()
+    val cfgEdges: MutableSet<CpgEdge> = linkedSetOf()
+    val ddgEdges: MutableSet<CpgEdge> = linkedSetOf()
+    val cdgEdges: MutableSet<CpgEdge> = linkedSetOf()
+
+    /** AST parent-child structural edges (see [JimpleAstBuilder]). */
+    val astEdges: MutableSet<CpgEdge> = linkedSetOf()
+
+    /** Statement-index -> AST-root-node fusion edges ([EdgeKind.BINDS_TO]). */
+    val bindingEdges: MutableSet<CpgEdge> = linkedSetOf()
+
+    val astNodes: MutableList<JimpleAstNode> = mutableListOf()
 
     val stmtToIndex: MutableMap<Stmt, Int> = linkedMapOf()
     val indexToStmt: MutableMap<Int, Stmt> = linkedMapOf()
     val cfgSuccessors: MutableMap<Int, MutableList<Int>> = linkedMapOf()
     val cfgPredecessors: MutableMap<Int, MutableList<Int>> = linkedMapOf()
 
+    /** A definition site: variable [variable] defined at statement [defIdx]. */
+    private data class DefSite(val variable: String, val defIdx: Int)
+
+    /**
+     * `X = $result` immediately following a suspend call that itself defined
+     * `X` is the same logical value arriving via the continuation, not a
+     * real overwrite. In reaching-definitions terms this statement is
+     * *transparent* for `X`: it neither generates a new definition nor kills
+     * the one already reaching it, so earlier definitions of `X` keep
+     * reaching past it instead of being killed here.
+     */
+    private fun isTransparentContinuationReload(stmt: Stmt, varName: String): Boolean {
+        val assign = stmt as? JAssignStmt ?: return false
+        val rightOp = assign.rightOp
+        return rightOp is Local && rightOp.name == "\$result" &&
+            assign.def.let { it.isPresent && it.get() is Local && (it.get() as Local).toString() == varName }
+    }
+
+    /**
+     * Standard iterative reaching-definitions dataflow, run to a fixpoint:
+     *
+     * ```
+     * OUT[n] = GEN[n] U (IN[n] - KILL[n])
+     * IN[n]  = union over predecessors p of OUT[p]
+     * ```
+     *
+     * GEN[n] is the (at most one, since Jimple is close to three-address
+     * code) non-transparent local definition made at statement n; KILL[n] is
+     * every other definition of that same variable anywhere in the method. A
+     * DDG edge `def -> use` (labeled with the variable) is then emitted for
+     * every definition in IN[use] whose variable is actually read at `use`.
+     */
     private fun buildDdgEdges() {
-        for (defIdx in stmtLabels.indices) {
-            val defStmt = indexToStmt[defIdx] ?: continue
-            val defOpt = defStmt.def
+        val n = stmtLabels.size
+        if (n == 0) return
+
+        val allDefsByVar = linkedMapOf<String, MutableList<Int>>()
+        val defSiteAt = arrayOfNulls<DefSite>(n)
+
+        for (i in 0 until n) {
+            val stmt = indexToStmt[i] ?: continue
+            val defOpt = stmt.def
             if (!defOpt.isPresent) continue
             val defVal: LValue = defOpt.get()
             if (defVal !is Local) continue
             val varName = defVal.toString()
+            if (isTransparentContinuationReload(stmt, varName)) continue
 
-            val visited = linkedSetOf<Int>()
-            val queue: java.util.Queue<Int> = LinkedList()
-            cfgSuccessors[defIdx]?.forEach { queue.add(it) }
+            allDefsByVar.getOrPut(varName) { mutableListOf() }.add(i)
+            defSiteAt[i] = DefSite(varName, i)
+        }
 
-            while (queue.isNotEmpty()) {
-                val currIdx = queue.poll()
-                if (currIdx in visited) continue
-                visited.add(currIdx)
+        val gen = Array(n) { i -> defSiteAt[i]?.let { setOf(it) } ?: emptySet() }
+        val kill = Array(n) { i ->
+            val d = defSiteAt[i]
+            if (d == null) {
+                emptySet()
+            } else {
+                allDefsByVar.getValue(d.variable).asSequence()
+                    .filter { it != i }
+                    .map { DefSite(d.variable, it) }
+                    .toSet()
+            }
+        }
 
-                val currStmt = indexToStmt[currIdx] ?: continue
+        val inSets = Array(n) { emptySet<DefSite>() }
+        val outSets = Array(n) { emptySet<DefSite>() }
 
-                for (useVal in currStmt.uses.toList()) {
-                    if (useVal is Local && useVal.toString() == varName) {
-                        ddgEdges.add("$defIdx|$currIdx|$varName")
-                        break
-                    }
+        var changed = true
+        while (changed) {
+            changed = false
+            for (i in 0 until n) {
+                val newIn = mutableSetOf<DefSite>()
+                for (p in cfgPredecessors[i].orEmpty()) {
+                    if (p < n) newIn.addAll(outSets[p])
+                }
+                if (newIn != inSets[i]) {
+                    inSets[i] = newIn
+                    changed = true
                 }
 
-                val currDef = currStmt.def
-                if (currDef.isPresent && currDef.get() is Local && currDef.get().toString() == varName) {
-                    // `X = $result` right after a suspend call that defined X is the
-                    // same logical value arriving via the continuation, not a real
-                    // overwrite — keep tracing instead of treating it as taint-killing.
-                    val rightOp = (currStmt as? JAssignStmt)?.rightOp
-                    if (rightOp is Local && rightOp.name == "\$result") {
-                        cfgSuccessors[currIdx]?.forEach { succ ->
-                            if (succ !in visited) queue.add(succ)
-                        }
-                    }
-                    continue
+                val newOut = gen[i] + (inSets[i] - kill[i])
+                if (newOut != outSets[i]) {
+                    outSets[i] = newOut
+                    changed = true
                 }
+            }
+        }
 
-                cfgSuccessors[currIdx]?.forEach { succ ->
-                    if (succ !in visited) queue.add(succ)
+        for (useIdx in 0 until n) {
+            val stmt = indexToStmt[useIdx] ?: continue
+            val usedVars = stmt.uses.toList().filterIsInstance<Local>().mapTo(linkedSetOf()) { it.toString() }
+            if (usedVars.isEmpty()) continue
+            for (site in inSets[useIdx]) {
+                if (site.variable in usedVars) {
+                    ddgEdges.add(CpgEdge(site.defIdx, useIdx, EdgeKind.DDG, variable = site.variable))
                 }
             }
         }
@@ -177,11 +262,7 @@ class CpgData {
             val frontier = domFrontier[d] ?: continue
             val condition = getBranchCondition(d)
             for (target in frontier) {
-                if (condition != null) {
-                    cdgEdges.add("$d|$target|$condition")
-                } else {
-                    cdgEdges.add("$d|$target")
-                }
+                cdgEdges.add(CpgEdge(d, target, EdgeKind.CDG, condition = condition))
             }
         }
 
@@ -190,7 +271,7 @@ class CpgData {
             val varName = getSideEffectDef(defStmt) ?: continue
 
             val seVisited = linkedSetOf<Int>()
-            val seQueue: java.util.Queue<Int> = LinkedList()
+            val seQueue: java.util.Queue<Int> = java.util.LinkedList()
             cfgSuccessors[defIdx]?.forEach { seQueue.add(it) }
 
             while (seQueue.isNotEmpty()) {
@@ -202,7 +283,7 @@ class CpgData {
 
                 for (useVal in currStmt.uses.toList()) {
                     if (useVal is Local && useVal.toString() == varName) {
-                        ddgEdges.add("$defIdx|$currIdx|$varName")
+                        ddgEdges.add(CpgEdge(defIdx, currIdx, EdgeKind.DDG, variable = varName))
                         break
                     }
                 }
@@ -253,28 +334,49 @@ class CpgData {
         return null
     }
 
+    /** Builds the AST layer (one subtree per statement) and the exact statement-to-AST-root binding edges. */
+    private fun buildAstLayer() {
+        var nextAstId = JimpleAstNode.ID_OFFSET
+        for (i in stmtLabels.indices) {
+            val stmt = indexToStmt[i] ?: continue
+            val result = JimpleAstBuilder.build(stmt, nextAstId)
+            astNodes.addAll(result.nodes)
+            astEdges.addAll(result.edges)
+            bindingEdges.add(CpgEdge(i, result.rootId, EdgeKind.BINDS_TO))
+            nextAstId = result.nextId
+        }
+    }
+
     fun countStatements(): Int = stmtLabels.size
     fun countCfgEdges(): Int = cfgEdges.size
     fun countDdgEdges(): Int = ddgEdges.size
     fun countCdgEdges(): Int = cdgEdges.size
+    fun countAstNodes(): Int = astNodes.size
+    fun countAstEdges(): Int = astEdges.size
 
-    fun getCdgParents(stmtIdx: Int): List<Int> {
-        val parents = mutableListOf<Int>()
-        for (edge in cdgEdges) {
-            val parts = edge.split("|")
-            if (parts[1].toInt() == stmtIdx) parents.add(parts[0].toInt())
-        }
-        return parents
-    }
+    fun getCdgParents(stmtIdx: Int): List<Int> = cdgEdges.filter { it.dst == stmtIdx }.map { it.src }
 
     companion object {
         fun fromMethod(method: SootMethod): CpgData {
+            if (!method.hasBody()) {
+                val data = CpgData()
+                data.methodSignature = method.signature.toString()
+                return data
+            }
+            return fromBody(method.body.stmtGraph, method.signature.toString())
+        }
+
+        /**
+         * Builds a [CpgData] directly from a [StmtGraph], bypassing
+         * [SootMethod]/class loading — used by tests to exercise the
+         * CFG/DDG/CDG/AST construction against small, hand-built statement
+         * graphs (the same [sootup.core.graph.MutableBlockStmtGraph]-based
+         * fixture style [com.infinity.cps.reconstruction.reconstruct.SuspendChainReconstructorTest]
+         * already uses) instead of compiling real class files.
+         */
+        fun fromBody(stmtGraph: StmtGraph<*>, methodSignature: String?): CpgData {
             val data = CpgData()
-            data.methodSignature = method.signature.toString()
-
-            if (!method.hasBody()) return data
-
-            val stmtGraph = method.body.stmtGraph
+            data.methodSignature = methodSignature
 
             var idx = 0
             for (block in stmtGraph.blocks) {
@@ -296,7 +398,7 @@ class CpgData {
                     val srcIdx = data.stmtToIndex[stmts[i]]
                     val dstIdx = data.stmtToIndex[stmts[i + 1]]
                     if (srcIdx != null && dstIdx != null) {
-                        data.cfgEdges.add("$srcIdx|$dstIdx")
+                        data.cfgEdges.add(CpgEdge(srcIdx, dstIdx, EdgeKind.CFG))
                     }
                 }
                 if (stmts.isNotEmpty()) {
@@ -307,7 +409,7 @@ class CpgData {
                             if (succStmts.isNotEmpty()) {
                                 val dstIdx = data.stmtToIndex[succStmts[0]]
                                 if (dstIdx != null) {
-                                    data.cfgEdges.add("$srcIdx|$dstIdx")
+                                    data.cfgEdges.add(CpgEdge(srcIdx, dstIdx, EdgeKind.CFG))
                                 }
                             }
                         }
@@ -316,16 +418,14 @@ class CpgData {
             }
 
             for (edge in data.cfgEdges) {
-                val parts = edge.split("|")
-                data.cfgSuccessors.getOrPut(parts[0].toInt()) { mutableListOf() }.add(parts[1].toInt())
+                data.cfgSuccessors.getOrPut(edge.src) { mutableListOf() }.add(edge.dst)
             }
 
             for (i in 0..data.stmtLabels.size) {
                 data.cfgPredecessors[i] = mutableListOf()
             }
             for (edge in data.cfgEdges) {
-                val parts = edge.split("|")
-                data.cfgPredecessors[parts[1].toInt()]!!.add(parts[0].toInt())
+                data.cfgPredecessors[edge.dst]!!.add(edge.src)
             }
             val virtualExit = data.stmtLabels.size
             for (i in 0 until data.stmtLabels.size) {
@@ -336,6 +436,7 @@ class CpgData {
 
             data.buildDdgEdges()
             data.buildCdgEdges()
+            data.buildAstLayer()
 
             return data
         }

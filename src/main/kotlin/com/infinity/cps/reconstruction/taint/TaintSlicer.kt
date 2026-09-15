@@ -115,18 +115,12 @@ object TaintSlicer {
         }
 
         for (edge in data.ddgEdges) {
-            val parts = edge.split("|")
-            val src = parts[0].toInt()
-            val dst = parts[1].toInt()
-            forwardAdj[src]?.add(dst)
-            backwardAdj[dst]?.add(src)
+            forwardAdj[edge.src]?.add(edge.dst)
+            backwardAdj[edge.dst]?.add(edge.src)
         }
         for (edge in data.cdgEdges) {
-            val parts = edge.split("|")
-            val src = parts[0].toInt()
-            val dst = parts[1].toInt()
-            forwardAdj[src]?.add(dst)
-            backwardAdj[dst]?.add(src)
+            forwardAdj[edge.src]?.add(edge.dst)
+            backwardAdj[edge.dst]?.add(edge.src)
         }
 
         for (src in result.sourceStmts) bfsForward(src, forwardAdj, result.forwardSlice)
@@ -373,8 +367,7 @@ object TaintSlicer {
         val backwardDdg = linkedMapOf<Int, MutableList<Int>>()
         for (i in data.stmtLabels.indices) backwardDdg[i] = mutableListOf()
         for (edge in data.ddgEdges) {
-            val parts = edge.split("|")
-            backwardDdg[parts[1].toInt()]?.add(parts[0].toInt())
+            backwardDdg[edge.dst]?.add(edge.src)
         }
         return backwardDdg
     }
@@ -420,8 +413,7 @@ object TaintSlicer {
 
         val forwardDdg = linkedMapOf<Int, MutableList<Int>>()
         for (edge in data.ddgEdges) {
-            val parts = edge.split("|")
-            forwardDdg.getOrPut(parts[0].toInt()) { mutableListOf() }.add(parts[1].toInt())
+            forwardDdg.getOrPut(edge.src) { mutableListOf() }.add(edge.dst)
         }
 
         while (queue.isNotEmpty()) {

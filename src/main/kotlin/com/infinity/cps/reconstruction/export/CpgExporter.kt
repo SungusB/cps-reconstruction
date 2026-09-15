@@ -28,19 +28,14 @@ object CpgExporter {
             writer.println()
 
             for (edge in data.cfgEdges) {
-                val parts = edge.split("|")
-                writer.println("  ${parts[0]} -> ${parts[1]} [color=\"blue\"];")
+                writer.println("  ${edge.src} -> ${edge.dst} [color=\"blue\"];")
             }
             for (edge in data.ddgEdges) {
-                val parts = edge.split("|")
-                val varName = if (parts.size > 2) parts[2] else ""
-                writer.println("  ${parts[0]} -> ${parts[1]} [color=\"green\", label=\"$varName\", style=dashed];")
+                writer.println("  ${edge.src} -> ${edge.dst} [color=\"green\", label=\"${edge.variable ?: ""}\", style=dashed];")
             }
             for (edge in data.cdgEdges) {
-                val parts = edge.split("|")
-                val cond = if (parts.size > 2) parts[2] else ""
-                val labelAttr = if (cond.isEmpty()) "" else ", label=\"$cond\""
-                writer.println("  ${parts[0]} -> ${parts[1]} [color=\"red\", style=dotted$labelAttr];")
+                val labelAttr = if (edge.condition.isNullOrEmpty()) "" else ", label=\"${edge.condition}\""
+                writer.println("  ${edge.src} -> ${edge.dst} [color=\"red\", style=dotted$labelAttr];")
             }
 
             writer.println("}")

@@ -1,28 +1,33 @@
 package com.infinity.cps.reconstruction.export
 
 import com.infinity.cps.reconstruction.cpg.CpgData
+import com.infinity.cps.reconstruction.cpg.CpgEdge
 import com.infinity.cps.reconstruction.taint.TaintSlicer
 import java.io.File
 import java.io.PrintWriter
 
 /**
- * Exports a [CpgData] and its [TaintSlicer.SliceResult] as JSON, following a
- * Joern-compatible CPG schema: nodes with statement labels, line numbers,
- * types, and slice roles; edges (CFG, DDG, CDG, and taint flow paths); and
- * summary metadata.
+ * Exports a [CpgData] and its [TaintSlicer.SliceResult] as JSON: the full
+ * four-layer CPG (AST, CFG, DDG, CDG — see [CpgData]'s doc comment) plus
+ * slice/taint-flow annotations, following a Joern-compatible schema shape
+ * (typed nodes and edges, edge-kind-tagged) extended with an `astNodes`
+ * array and `AST`/`BINDS_TO` edges Joern's own JVM-bytecode CPG doesn't
+ * expose in the same form.
  */
 object CpgJsonExporter {
 
     fun export(data: CpgData, slice: TaintSlicer.SliceResult, outputFile: String) {
         PrintWriter(File(outputFile)).use { writer ->
             writer.println("{")
-            writer.println("  \"schema\": \"joern-cpg-v1\",")
+            writer.println("  \"schema\": \"cpg-ast-cfg-ddg-cdg-v2\",")
             writer.println("  \"method\": \"${JsonUtil.escape(data.methodSignature ?: "")}\",")
             writer.println("  \"metadata\": {")
             writer.println("    \"statementCount\": ${data.countStatements()},")
+            writer.println("    \"astNodeCount\": ${data.countAstNodes()},")
             writer.println("    \"cfgEdgeCount\": ${data.countCfgEdges()},")
             writer.println("    \"ddgEdgeCount\": ${data.countDdgEdges()},")
             writer.println("    \"cdgEdgeCount\": ${data.countCdgEdges()},")
+            writer.println("    \"astEdgeCount\": ${data.countAstEdges()},")
             writer.println("    \"sourceCount\": ${slice.sourceStmts.size},")
             writer.println("    \"sinkCount\": ${slice.sinkStmts.size},")
             writer.println("    \"chopSize\": ${slice.chop.size},")
@@ -30,6 +35,9 @@ object CpgJsonExporter {
             writer.println("  },")
             writer.println("  \"nodes\": [")
             writeNodes(writer, data, slice)
+            writer.println("  ],")
+            writer.println("  \"astNodes\": [")
+            writeAstNodes(writer, data)
             writer.println("  ],")
             writer.println("  \"edges\": [")
             writeEdges(writer, data, slice)
@@ -63,23 +71,23 @@ object CpgJsonExporter {
         }
     }
 
+    private fun writeAstNodes(writer: PrintWriter, data: CpgData) {
+        for ((idx, node) in data.astNodes.withIndex()) {
+            writer.println("    {")
+            writer.println("      \"id\": ${node.id},")
+            writer.println("      \"kind\": \"${JsonUtil.escape(node.kind)}\",")
+            writer.println("      \"text\": \"${JsonUtil.escape(node.text)}\"")
+            writer.println(if (idx < data.astNodes.size - 1) "    }," else "    }")
+        }
+    }
+
     private fun writeEdges(writer: PrintWriter, data: CpgData, slice: TaintSlicer.SliceResult) {
         val allEdges = mutableListOf<String>()
-        for (edge in data.cfgEdges) {
-            val parts = edge.split("|")
-            allEdges.add("      {\"src\": ${parts[0]}, \"dst\": ${parts[1]}, \"type\": \"CFG\"}")
-        }
-        for (edge in data.ddgEdges) {
-            val parts = edge.split("|", limit = 3)
-            val varName = if (parts.size > 2) parts[2] else ""
-            allEdges.add("      {\"src\": ${parts[0]}, \"dst\": ${parts[1]}, \"type\": \"DDG\", \"variable\": \"${JsonUtil.escape(varName)}\"}")
-        }
-        for (edge in data.cdgEdges) {
-            val parts = edge.split("|", limit = 3)
-            val condition = if (parts.size > 2) parts[2] else ""
-            val condAttr = if (condition.isEmpty()) "" else ", \"condition\": \"${JsonUtil.escape(condition)}\""
-            allEdges.add("      {\"src\": ${parts[0]}, \"dst\": ${parts[1]}, \"type\": \"CDG\"$condAttr}")
-        }
+        for (edge in data.cfgEdges) allEdges.add(edgeJson(edge))
+        for (edge in data.ddgEdges) allEdges.add(edgeJson(edge))
+        for (edge in data.cdgEdges) allEdges.add(edgeJson(edge))
+        for (edge in data.astEdges) allEdges.add(edgeJson(edge))
+        for (edge in data.bindingEdges) allEdges.add(edgeJson(edge))
         for (flow in slice.taintFlows) {
             for (i in 0 until flow.path.size - 1) {
                 allEdges.add("      {\"src\": ${flow.path[i]}, \"dst\": ${flow.path[i + 1]}, \"type\": \"TAINT_FLOW\", \"category\": \"${JsonUtil.escape(flow.category.toString())}\"}")
@@ -88,6 +96,13 @@ object CpgJsonExporter {
         for (i in allEdges.indices) {
             writer.println(allEdges[i] + if (i < allEdges.size - 1) "," else "")
         }
+    }
+
+    private fun edgeJson(edge: CpgEdge): String {
+        val attrs = mutableListOf("\"src\": ${edge.src}", "\"dst\": ${edge.dst}", "\"type\": \"${edge.kind}\"")
+        edge.variable?.let { attrs.add("\"variable\": \"${JsonUtil.escape(it)}\"") }
+        edge.condition?.let { attrs.add("\"condition\": \"${JsonUtil.escape(it)}\"") }
+        return "      {${attrs.joinToString(", ")}}"
     }
 
     private fun classifyStatement(stmt: String): String {

@@ -32,8 +32,22 @@ import java.io.PrintWriter
  *
  * `--no-reconstruct` skips [SuspendChainReconstructor] and analyzes the raw
  * bytecode instead. Running the same classpath with and without this flag
- * and comparing `totalTaintFlows` across the two `summary.json` outputs is
- * the ablation: how many flows are recovered only because of reconstruction.
+ * and comparing the two `summary.json` outputs is the ablation.
+ *
+ * `totalTaintFlows` alone is not a meaningful ablation signal for this tool:
+ * Kotlin's coroutine ABI always emits a "didn't actually suspend" fast path
+ * as ordinary sequential bytecode ahead of the `label`-dispatch switch, so a
+ * reachability-only ("does a flow exist") analysis finds the same flows with
+ * or without reconstruction — the fast path alone is a complete, walkable
+ * source-to-sink path for any suspend-chain shape (straight-line, branches,
+ * or loops), independent of whether the dispatch machinery is stripped. What
+ * reconstruction demonstrably changes is *how much of the method a taint
+ * analyzer has to look at to explain that flow*: `methodStats[].chopSize` and
+ * `.statementCount` — the size of the CPG and of the minimal slice
+ * explaining a flow — shrink substantially once dispatch bookkeeping (label
+ * writes, spill-field reads/writes, the suspend-check `if`, the switch
+ * itself) is stripped, because that bookkeeping no longer has to be
+ * traversed or reasoned about to establish the same flow.
  */
 fun main(args: Array<String>) {
     val positional = args.filterNot { it.startsWith("--") }
@@ -54,10 +68,10 @@ fun main(args: Array<String>) {
     analyzer.analyze(view, methods)
 
     val outputDirs = OutputDirs(outputDir)
-    val findings = sliceAndExport(view, methods, analyzer, outputDirs)
+    val result = sliceAndExport(view, methods, analyzer, outputDirs)
 
-    writeSummary(outputDirs, methods.size, reconstructionEnabled, reconstruction, findings)
-    println("[*] total taint flows: ${findings.size}")
+    writeSummary(outputDirs, methods.size, reconstructionEnabled, reconstruction, result.findings, result.methodStats)
+    println("[*] total taint flows: ${result.findings.size}")
 }
 
 private fun collectMethodSignatures(view: JavaView): Set<MethodSignature> {
@@ -96,13 +110,23 @@ private class OutputDirs(outputDir: String) {
 
 private class Finding(val method: MethodSignature, val category: String, val sourceLine: Int, val sinkLine: Int)
 
+/**
+ * Per-method size of the evidence needed to explain a flow — the ablation
+ * signal that actually differs between reconstruction on and off (see
+ * [main]'s doc comment for why raw flow-count doesn't).
+ */
+private class MethodStats(val method: MethodSignature, val statementCount: Int, val chopSize: Int)
+
+private class SliceResult(val findings: List<Finding>, val methodStats: List<MethodStats>)
+
 private fun sliceAndExport(
     view: JavaView,
     methods: Set<MethodSignature>,
     analyzer: InterProceduralAnalyzer,
     dirs: OutputDirs,
-): List<Finding> {
+): SliceResult {
     val findings = mutableListOf<Finding>()
+    val methodStats = mutableListOf<MethodStats>()
 
     for (methodSig in methods) {
         val methodOpt = view.getMethod(methodSig)
@@ -121,6 +145,8 @@ private fun sliceAndExport(
         val safeName = "${methodSig.declClassType.className}_${methodOpt.get().name}"
         exportArtifacts(cpgData, slice, safeName, dirs)
 
+        methodStats.add(MethodStats(methodSig, cpgData.countStatements(), slice.chop.size))
+
         for (flow in slice.taintFlows) {
             val srcLine = cpgData.stmtLines.getOrElse(flow.sourceIdx) { -1 }
             val sinkLine = cpgData.stmtLines.getOrElse(flow.sinkIdx) { -1 }
@@ -129,7 +155,7 @@ private fun sliceAndExport(
         }
     }
 
-    return findings
+    return SliceResult(findings, methodStats)
 }
 
 private fun exportArtifacts(cpgData: CpgData, slice: TaintSlicer.SliceResult, safeName: String, dirs: OutputDirs) {
@@ -149,6 +175,7 @@ private fun writeSummary(
     reconstructionEnabled: Boolean,
     reconstruction: ReconstructionStats,
     findings: List<Finding>,
+    methodStats: List<MethodStats>,
 ) {
     runCatching {
         PrintWriter(File(dirs.base, "summary.json")).use { sw ->
@@ -166,6 +193,13 @@ private fun writeSummary(
                 sw.println("    {\"method\": \"${JsonUtil.escape(f.method.toString())}\", " +
                     "\"category\": \"${JsonUtil.escape(f.category)}\", " +
                     "\"sourceLine\": ${f.sourceLine}, \"sinkLine\": ${f.sinkLine}}$comma")
+            }
+            sw.println("  ],")
+            sw.println("  \"methodStats\": [")
+            for ((i, m) in methodStats.withIndex()) {
+                val comma = if (i < methodStats.size - 1) "," else ""
+                sw.println("    {\"method\": \"${JsonUtil.escape(m.method.toString())}\", " +
+                    "\"statementCount\": ${m.statementCount}, \"chopSize\": ${m.chopSize}}$comma")
             }
             sw.println("  ]")
             sw.println("}")

@@ -142,8 +142,8 @@ object FieldAliasTracker {
      * not a fall-through), so a write in one case and a read in another are
      * not actually connected within a single execution.
      */
-    fun findFieldDdgEdges(data: CpgData): List<String> {
-        val edges = mutableListOf<String>()
+    fun findFieldDdgEdges(data: CpgData): List<CpgEdge> {
+        val edges = mutableListOf<CpgEdge>()
         val accesses = findFieldAccesses(data)
 
         val byField = linkedMapOf<String, MutableList<FieldAccess>>()
@@ -157,7 +157,7 @@ object FieldAliasTracker {
             for (write in writes) {
                 for (read in reads) {
                     if (read.stmtIdx != write.stmtIdx && isReachable(data, write.stmtIdx, read.stmtIdx)) {
-                        val edge = "${write.stmtIdx}|${read.stmtIdx}|field:${write.fieldName}"
+                        val edge = CpgEdge(write.stmtIdx, read.stmtIdx, EdgeKind.DDG, variable = "field:${write.fieldName}")
                         if (edge !in edges) edges.add(edge)
                     }
                 }
@@ -168,7 +168,7 @@ object FieldAliasTracker {
         return edges
     }
 
-    private fun addLocalAliasEdges(data: CpgData, accesses: List<FieldAccess>, edges: MutableList<String>) {
+    private fun addLocalAliasEdges(data: CpgData, accesses: List<FieldAccess>, edges: MutableList<CpgEdge>) {
         for (i in data.stmtLabels.indices) {
             val stmt = data.indexToStmt[i] as? JAssignStmt ?: continue
             val defOpt = stmt.def
@@ -182,7 +182,7 @@ object FieldAliasTracker {
                 val fieldReadStmt = data.indexToStmt[acc.stmtIdx] as? JAssignStmt ?: continue
                 val fieldDef = fieldReadStmt.def
                 if (fieldDef.isPresent && fieldDef.get() is Local && (fieldDef.get() as Local).name == right.name) {
-                    val edge = "${acc.stmtIdx}|$i|alias:${acc.fieldName}"
+                    val edge = CpgEdge(acc.stmtIdx, i, EdgeKind.DDG, variable = "alias:${acc.fieldName}")
                     if (edge !in edges) edges.add(edge)
                 }
             }

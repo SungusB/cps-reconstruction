@@ -77,14 +77,8 @@ class InterProceduralAnalyzer {
 
         val forwardAdj = linkedMapOf<Int, MutableList<Int>>()
         for (i in cpg.stmtLabels.indices) forwardAdj[i] = mutableListOf()
-        for (edge in cpg.ddgEdges) {
-            val parts = edge.split("|")
-            forwardAdj[parts[0].toInt()]?.add(parts[1].toInt())
-        }
-        for (edge in cpg.cdgEdges) {
-            val parts = edge.split("|")
-            forwardAdj[parts[0].toInt()]?.add(parts[1].toInt())
-        }
+        for (edge in cpg.ddgEdges) forwardAdj[edge.src]?.add(edge.dst)
+        for (edge in cpg.cdgEdges) forwardAdj[edge.src]?.add(edge.dst)
 
         val sourceStmts = linkedSetOf<Int>()
         for (i in cpg.stmtLabels.indices) {
