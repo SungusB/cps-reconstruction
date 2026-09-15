@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.infinity.cps.reconstruction.reconstruct.SuspendChainReconstructorTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-15T03:50:51.031Z" hostname="arch" time="0.038">
+  <properties/>
+  <testcase name="while-loop back-edge is flagged unsupported()" classname="com.infinity.cps.reconstruction.reconstruct.SuspendChainReconstructorTest" time="0.022"/>
+  <testcase name="if-else between suspension points is flagged unsupported()" classname="com.infinity.cps.reconstruction.reconstruct.SuspendChainReconstructorTest" time="0.004"/>
+  <testcase name="statement inside try-catch is flagged unsupported()" classname="com.infinity.cps.reconstruction.reconstruct.SuspendChainReconstructorTest" time="0.001"/>
+  <testcase name="straight-line chain is not flagged unsupported()" classname="com.infinity.cps.reconstruction.reconstruct.SuspendChainReconstructorTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
