@@ -5,6 +5,7 @@ import com.infinity.cps.reconstruction.cpg.FieldAliasTracker
 import sootup.core.jimple.basic.Local
 import sootup.core.jimple.common.ref.JInstanceFieldRef
 import sootup.core.jimple.common.stmt.JAssignStmt
+import sootup.core.model.Body
 import sootup.core.signatures.MethodSignature
 import sootup.java.core.views.JavaView
 import java.util.LinkedList
@@ -28,9 +29,17 @@ class InterProceduralAnalyzer {
     private val summaries: MutableMap<String, TaintSummary> = linkedMapOf()
     private val cpgCache: MutableMap<String, CpgData> = linkedMapOf()
     private lateinit var view: JavaView
+    private var reconstructedBodies: Map<MethodSignature, Body> = emptyMap()
 
-    fun analyze(view: JavaView, methods: Set<MethodSignature>) {
+    /**
+     * [reconstructedBodies], if given, is used directly instead of
+     * `view.getMethod(sig).body` for any signature it contains — see
+     * [com.infinity.cps.reconstruction.reconstruct.SuspendChainReconstructor.getReconstructedBodies]
+     * for why re-querying the view after reconstruction isn't reliable.
+     */
+    fun analyze(view: JavaView, methods: Set<MethodSignature>, reconstructedBodies: Map<MethodSignature, Body> = emptyMap()) {
         this.view = view
+        this.reconstructedBodies = reconstructedBodies
         var changed = true
         var iter = 0
         while (changed && iter < 3) {
@@ -62,15 +71,22 @@ class InterProceduralAnalyzer {
     private fun computeSummary(sig: MethodSignature): TaintSummary {
         val summary = TaintSummary(sig.toString())
 
-        val methodOpt = view.getMethod(sig)
-        if (methodOpt.isEmpty || !methodOpt.get().hasBody()) return summary
-
-        val method = methodOpt.get()
-        val cpg = CpgData.fromMethod(method)
+        val reconstructedBody = reconstructedBodies[sig]
+        val body: Body
+        val cpg: CpgData
+        if (reconstructedBody != null) {
+            body = reconstructedBody
+            cpg = CpgData.fromBody(reconstructedBody.stmtGraph, sig.toString())
+        } else {
+            val methodOpt = view.getMethod(sig)
+            if (methodOpt.isEmpty || !methodOpt.get().hasBody()) return summary
+            body = methodOpt.get().body
+            cpg = CpgData.fromMethod(methodOpt.get())
+        }
         cpgCache[sig.toString()] = cpg
 
         val paramList: List<Local> = try {
-            method.body.parameterLocals.toList()
+            body.parameterLocals.toList()
         } catch (e: Exception) {
             return summary
         }

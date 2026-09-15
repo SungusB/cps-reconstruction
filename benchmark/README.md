@@ -39,6 +39,6 @@ without top-level-function name collisions (several files reuse names like
 | `straight-line/` | Suspend chains with no control flow between suspension points | `FLOW` |
 | `if-else/` | Suspend calls inside a conditional | `UNSUPPORTED` |
 | `loops/` | Suspend calls inside `while`/`for` | `UNSUPPORTED` |
-| `try-catch/` | Suspend calls inside a protected (trap-covered) region | `UNSUPPORTED` |
+| `try-catch/` | Suspend calls inside a protected (trap-covered) region | `FLOW` or `UNSUPPORTED` (mixed — a single-level try/catch reconstructs; `finally`'s nested trap still doesn't, see individual files) |
 | `nested-lambda/` | Closure-captured taint into a nested suspend lambda | `FLOW` or `NO-FLOW` (mixed — see individual files) |
 | `control/` | No coroutines at all — regression check on ordinary taint tracking | `FLOW` or `NO-FLOW` |

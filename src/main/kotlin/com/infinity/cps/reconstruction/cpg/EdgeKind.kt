@@ -19,4 +19,17 @@ enum class EdgeKind {
     CDG,
     AST,
     BINDS_TO,
+
+    /**
+     * A statement's exceptional successor — the edge from a trap-covered
+     * statement to its handler ([sootup.core.graph.StmtGraph.exceptionalSuccessors]).
+     * Kept separate from [CFG] rather than folded into it: [CpgData]'s
+     * `cfgSuccessors`/`cfgPredecessors` (and the CDG/DDG dataflow built over
+     * them) intentionally see only normal control flow, so adding this kind
+     * doesn't change what either algorithm computes — it exists for
+     * visualizing which statements are trap-covered and where their handler
+     * is, not for dataflow. [CpgEdge.condition] carries the exception type's
+     * name.
+     */
+    EXCEPTIONAL,
 }

@@ -13,6 +13,8 @@ import com.infinity.cps.reconstruction.taint.TaintSlicer
 import sootup.core.inputlocation.AnalysisInputLocation
 import sootup.core.signatures.MethodSignature
 import sootup.java.bytecode.frontend.inputlocation.JavaClassPathAnalysisInputLocation
+import sootup.core.model.Body
+import sootup.java.core.JavaSootClass
 import sootup.java.core.views.JavaView
 import sootup.java.core.views.MutableJavaView
 import java.io.File
@@ -58,29 +60,42 @@ fun main(args: Array<String>) {
     println("[*] loading classes from: $classPath")
     val inputLocations: List<AnalysisInputLocation> = listOf(JavaClassPathAnalysisInputLocation(classPath))
     val view = MutableJavaView(inputLocations)
-    println("[*] loaded ${view.classes.count()} classes")
 
-    val methods = collectMethodSignatures(view)
+    // `view.classes` is iterated exactly once, here, before any mutation:
+    // iterating it a second time before SuspendChainReconstructor's
+    // replaceClass() calls run triggers a SootUp MutableJavaView caching bug
+    // where later view.getMethod() lookups keep returning the pre-replacement
+    // method — reproduced directly by adding a second `view.classes.count()`
+    // call ahead of reconstruction and observing replaced bodies silently
+    // revert to their original (un-reconstructed) statement count.
+    val classes = view.classes.toList()
+    println("[*] loaded ${classes.size} classes")
+
+    val methods = collectMethodSignatures(classes)
     val reconstruction = if (reconstructionEnabled) reconstructSuspendChains(view, methods) else ReconstructionStats()
 
     println("[*] running inter-procedural taint analysis on ${methods.size} methods...")
     val analyzer = InterProceduralAnalyzer()
-    analyzer.analyze(view, methods)
+    analyzer.analyze(view, methods, reconstruction.bodies)
 
     val outputDirs = OutputDirs(outputDir)
-    val result = sliceAndExport(view, methods, analyzer, outputDirs)
+    val result = sliceAndExport(view, methods, analyzer, reconstruction.bodies, outputDirs)
 
     writeSummary(outputDirs, methods.size, reconstructionEnabled, reconstruction, result.findings, result.methodStats)
     println("[*] total taint flows: ${result.findings.size}")
 }
 
-private fun collectMethodSignatures(view: JavaView): Set<MethodSignature> {
+private fun collectMethodSignatures(classes: List<JavaSootClass>): Set<MethodSignature> {
     val methods = mutableSetOf<MethodSignature>()
-    view.classes.forEach { cls -> cls.methods.forEach { if (it.hasBody()) methods.add(it.signature) } }
+    classes.forEach { cls -> cls.methods.forEach { if (it.hasBody()) methods.add(it.signature) } }
     return methods
 }
 
-private class ReconstructionStats(val reconstructedCount: Int = 0, val unsupportedCount: Int = 0)
+private class ReconstructionStats(
+    val reconstructedCount: Int = 0,
+    val unsupportedCount: Int = 0,
+    val bodies: Map<MethodSignature, Body> = emptyMap(),
+)
 
 private fun reconstructSuspendChains(view: JavaView, methods: Set<MethodSignature>): ReconstructionStats {
     println("[*] reconstructing Kotlin suspend chains...")
@@ -93,7 +108,7 @@ private fun reconstructSuspendChains(view: JavaView, methods: Set<MethodSignatur
         println("[*] ${unsupported.size} suspend chain(s) left unmodified (general-case-unsupported):")
         for (sig in unsupported) println("    - $sig")
     }
-    return ReconstructionStats(reconstructed.size, unsupported.size)
+    return ReconstructionStats(reconstructed.size, unsupported.size, reconstructor.getReconstructedBodies())
 }
 
 private class OutputDirs(outputDir: String) {
@@ -123,6 +138,7 @@ private fun sliceAndExport(
     view: JavaView,
     methods: Set<MethodSignature>,
     analyzer: InterProceduralAnalyzer,
+    reconstructedBodies: Map<MethodSignature, Body>,
     dirs: OutputDirs,
 ): SliceResult {
     val findings = mutableListOf<Finding>()
@@ -132,7 +148,9 @@ private fun sliceAndExport(
         val methodOpt = view.getMethod(methodSig)
         if (methodOpt.isEmpty || !methodOpt.get().hasBody()) continue
 
-        val cpgData = analyzer.getCpg(methodSig.toString()) ?: CpgData.fromMethod(methodOpt.get())
+        val cpgData = analyzer.getCpg(methodSig.toString())
+            ?: reconstructedBodies[methodSig]?.let { CpgData.fromBody(it.stmtGraph, methodSig.toString()) }
+            ?: CpgData.fromMethod(methodOpt.get())
         if (cpgData.countStatements() < 2) continue
 
         val slice = TaintSlicer.slice(cpgData)
@@ -140,6 +158,20 @@ private fun sliceAndExport(
             slice.taintFlows.addAll(TaintSlicer.findInterProceduralFlows(cpgData, slice, analyzer))
             slice.taintFlows.addAll(TaintSlicer.findCapturedFieldFlows(cpgData, slice, analyzer, view))
         }
+
+        // slice(), findInterProceduralFlows(), and findCapturedFieldFlows() each walk the
+        // CPG independently and can all report the same (source, sink) pair once a method's
+        // CFG has more than one real path between them — e.g. a reconstructed try/catch,
+        // where the intra-procedural chop now succeeds on its own *and* the inter-procedural
+        // callee-summary pass still separately confirms the same pair. Previously latent
+        // because a straight-line body has exactly one path; surfaced once general-case
+        // reconstruction started preserving exceptional edges (see SuspendChainReconstructor's
+        // unrollGeneralCase). Dedup by (source stmt, sink stmt, category), not by line number,
+        // since two distinct statements can share a source line.
+        val dedupedFlows = slice.taintFlows.distinctBy { Triple(it.sourceIdx, it.sinkIdx, it.category) }
+        slice.taintFlows.clear()
+        slice.taintFlows.addAll(dedupedFlows)
+
         if (!slice.hasVulnerability() && slice.taintFlows.isEmpty()) continue
 
         val safeName = "${methodSig.declClassType.className}_${methodOpt.get().name}"

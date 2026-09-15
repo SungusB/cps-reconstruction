@@ -1,8 +1,10 @@
-// GROUND TRUTH (proposed — pending confirmation)
-// expect: UNSUPPORTED
-// note: suspend call inside a try block — the statement is covered by a
-//       trap (exceptional edge to the catch handler); exception tables are
-//       explicitly out of scope.
+// GROUND TRUTH (confirmed — verified against compiled bytecode, see
+// docs/exception-handling/README.md)
+// expect: FLOW (reconstructed)
+// note: a single-level try/catch around a suspend call is now reconstructed:
+//       SuspendChainReconstructor.unrollGeneralCase preserves the exceptional
+//       edge to the catch handler instead of declining, once the handler
+//       resolves to real code and isn't itself exceptionally protected.
 package benchmark.trycatch.suspendintry
 
 suspend fun identity(x: String): String {

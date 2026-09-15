@@ -1,9 +1,11 @@
-// GROUND TRUTH (proposed — pending confirmation)
-// expect: UNSUPPORTED
-// note: the suspend call itself is textually after the try/catch, but it's
-//       part of the same case block as the protected region (no suspension
-//       point separates them), so the case block as a whole is still
-//       trap-covered.
+// GROUND TRUTH (confirmed — verified against compiled bytecode, see
+// docs/exception-handling/README.md)
+// expect: FLOW (reconstructed)
+// note: the try/catch here doesn't even wrap the suspend call (it protects
+//       the ordinary secret.trim() call, unrelated to suspension) — the
+//       general case walks straight through it, preserving the exceptional
+//       edge, and reaches the later suspend call with no special handling
+//       needed at all.
 package benchmark.trycatch.suspendaftercatch
 
 suspend fun identity(x: String): String {

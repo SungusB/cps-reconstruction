@@ -17,28 +17,46 @@ representation built from it, such as Jimple via SootUp) sees a single flat
 dispatch loop instead of the sequential suspend chain the original source
 expressed, and taint flows that cross a suspension point are invisible.
 
-This project reconstructs the original sequential control flow for
-**straight-line suspend chains** — a `suspend` function body containing one or
-more suspend calls with no other control flow (no branches, loops, or
-exception handlers between suspension points) — by identifying and stripping
-the compiler-generated dispatch bookkeeping (label writes, spill field
+This project reconstructs the original sequential control flow the lowering
+obscures: for a **straight-line suspend chain** (one or more suspend calls
+with no other control flow between them) by identifying and stripping the
+compiler-generated dispatch bookkeeping (label writes, spill field
 read/write pairs, the switch statement itself, and gotos that target other
-dispatch cases) from each case block, then splicing the remaining statements
-back into one linear method body.
+dispatch cases) from each case block and splicing the remaining statements
+back into one linear method body; and, via a general case that walks the
+method's real control-flow graph instead of text-slicing case blocks, for a
+suspend call inside a branch, a loop, or a single (non-nested) `try`/`catch`
+as well. See **Scope** below for the precise, verified boundary.
 
 ## Scope
 
-**Current scope:** straight-line suspend chains in Kotlin coroutines.
+**Current scope:** straight-line suspend chains (`unrollCoroutine`), plus a
+general case (`unrollGeneralCase`) that also reconstructs a suspend call
+inside `if`/`else`, a `while`/`for` loop, and a single (non-nested)
+`try`/`catch` — including one that doesn't even wrap the suspend call
+itself. The general case works by walking the method's real CFG from its
+`label == 0` entry point (the "didn't actually suspend" fast path Kotlin's
+coroutine ABI always emits as ordinary sequential bytecode ahead of the
+dispatch switch) and eliding dispatch bookkeeping by rewiring around it,
+rather than text-slicing case blocks — so it isn't pattern-matching specific
+shapes, it's a general transformation over whatever real control flow that
+fast path contains, exceptional edges included. See
+`SuspendChainReconstructor.kt`'s `unrollGeneralCase` doc comment for the
+verified structural argument this relies on, and
+`docs/exception-handling/README.md` for the try/catch case specifically
+(mechanism, literature, evaluation).
 
-**Explicitly out of scope:** suspend calls inside conditionals, loops, or
-try/catch blocks. Reconstructing these soundly requires solving the general
-phi-node synthesis / back-edge disambiguation problem for a lowered state
-machine, which is a substantially harder problem than dispatch-artifact
-stripping. Rather than guess at an unsound partial transformation, the tool
-detects these cases and declines to transform them, leaving the method body
-untouched and flagging it as unsupported (`general-case-unsupported`). See
-`SuspendChainReconstructor.kt`'s `findUnsupportedControlFlow` for the
-detection logic that draws this line.
+**Explicitly out of scope:** a suspend call inside `finally` — verified
+directly against compiled bytecode (not assumed) to compile to a nested,
+self-referential exception-table entry rather than the single-level trap the
+general case's exceptional-edge handling preserves; see
+`docs/exception-handling/README.md` §1.3 for the exact bytecode. Rather than
+guess at an unsound partial transformation for any case it can't verify
+sound, the tool detects these and declines to transform them, leaving the
+method body untouched and flagging it as unsupported
+(`general-case-unsupported`). See `SuspendChainReconstructor.kt`'s
+`findUnsupportedControlFlow` and `unrollGeneralCase` for the detection logic
+that draws this line.
 
 A closure captured into a nested suspend lambda (e.g. `launch { sink(x) }`,
 where `x` is read from the enclosing scope) is compiled as a
@@ -72,6 +90,9 @@ src/main/kotlin/com/infinity/cps/reconstruction/
   cli/           ReconstructionCli — the entry point
 benchmark/       hand-written Kotlin fixtures, one per control-flow shape
 scripts/         the ablation harness (with vs. without reconstruction)
+docs/            deeper write-ups for specific reconstruction cases (currently:
+                 exception-handling/, the try/catch case — mechanism, literature,
+                 evaluation, and the .dot files backing it)
 ```
 
 ## Code Property Graph construction
@@ -99,6 +120,13 @@ into one graph over a shared node space. All four layers are typed
   dispatch artifacts are stripped — a source AST could only be fused to the
   other three layers approximately, at line granularity.
 - **CFG.** Basic-block successor edges from SootUp's `stmtGraph`, unchanged.
+  A statement's exceptional successors (its traps, if any) are tracked
+  separately as `EdgeKind.EXCEPTIONAL` — visible in DOT exports (orange,
+  labeled with the exception type) but deliberately kept out of
+  `cfgSuccessors`/`cfgPredecessors`, so they don't affect the CDG/DDG
+  computation below. That's a known incompleteness, not just a design
+  choice: it means a caught statement's handler currently has no CDG-modeled
+  control dependence on it. See `docs/exception-handling/README.md` §4-5.
 - **CDG.** The Cytron et al. dominance-frontier algorithm (Cytron, Ferrante,
   Rosen, Wegman, Zadeck, "Efficiently Computing Static Single Assignment
   Form and the Control Dependence Graph", TOPLAS 1991), with immediate
@@ -156,9 +184,11 @@ keeps that entire path (including any real `if`/`while` structure the user
 wrote) flat and walkable without ever touching the dispatch machinery. A
 reachability-only ("does a flow exist") analysis finds the same answer via
 that fast path with or without reconstruction, for every suspend-chain shape
-— straight-line, branches, or loops — which is why `totalTaintFlows` is
-identical on `benchmark/` with and without reconstruction, and why that
-being unchanged is expected, not a bug.
+— straight-line, branches, loops, or a suspend call under a single
+try/catch (see `docs/exception-handling/README.md` §7 for that case
+specifically) — which is why `totalTaintFlows` is identical on `benchmark/`
+with and without reconstruction, and why that being unchanged is expected,
+not a bug.
 
 What reconstruction demonstrably changes is **how much of the method a
 taint analyzer has to look at to explain the same flow**: `scripts/compare_ablation.py`

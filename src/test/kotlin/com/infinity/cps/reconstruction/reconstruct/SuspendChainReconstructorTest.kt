@@ -1,7 +1,10 @@
 package com.infinity.cps.reconstruction.reconstruct
 
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import sootup.core.graph.MutableBlockStmtGraph
 import sootup.core.jimple.basic.Local
@@ -164,5 +167,101 @@ class SuspendChainReconstructorTest {
 
         assertTrue(reason != null && reason.contains("try/catch"),
             "expected a trapped statement to be declined with a 'try/catch' reason, got: $reason")
+    }
+
+    /**
+     * Unit tests for [SuspendChainReconstructor.resolvePreservableExceptionalEdges] —
+     * the decision [unrollGeneralCase] uses to preserve a single-level try/catch
+     * instead of declining on sight, extracted into a graph-only function
+     * (same rationale as [findUnsupportedControlFlow]: testable against a small
+     * hand-built graph, no [sootup.core.model.SootMethod] required).
+     */
+    @Nested
+    inner class ResolvePreservableExceptionalEdges {
+
+        private val exceptionType = JavaClassType("Exception", PackageName("java.lang"))
+
+        /**
+         * The case01/case03-shaped trap: a protected statement whose handler has
+         * no further exceptional successors of its own, and resolves (via the
+         * caller's bookkeeping-skip) to a real statement. Must be preserved, not
+         * declined.
+         */
+        @Test
+        fun `a single-level resolvable trap is preserved`() {
+            val guarded = JAssignStmt(local("r0"), IntConstant.getInstance(1), pos)
+            val handler = JNopStmt(pos)
+
+            val graph = MutableBlockStmtGraph()
+            graph.addNode(guarded)
+            graph.addNode(handler)
+            graph.setStartingStmt(guarded)
+            graph.addExceptionalEdge(guarded, exceptionType, handler)
+
+            val preserved = SuspendChainReconstructor.resolvePreservableExceptionalEdges(graph, guarded) { listOf(it) }
+
+            assertNotNull(preserved, "a single-level resolvable trap must not be declined")
+            assertEquals(listOf(Triple(guarded, exceptionType, handler)), preserved)
+        }
+
+        /**
+         * A statement with no exceptional successors at all — the common case.
+         * Must return an empty list (nothing to preserve), not decline.
+         */
+        @Test
+        fun `a statement with no exceptional successors preserves nothing and does not decline`() {
+            val plain = JAssignStmt(local("r0"), IntConstant.getInstance(1), pos)
+            val graph = MutableBlockStmtGraph()
+            graph.addNode(plain)
+            graph.setStartingStmt(plain)
+
+            val preserved = SuspendChainReconstructor.resolvePreservableExceptionalEdges(graph, plain) { listOf(it) }
+
+            assertEquals(emptyList<Triple<Stmt, sootup.core.types.ClassType, Stmt>>(), preserved)
+        }
+
+        /**
+         * The case02 (`finally`-with-suspend) shape verified directly against
+         * compiled bytecode: the handler is itself exceptionally protected (a
+         * nested/self-referential trap). Must decline (`null`), not guess.
+         */
+        @Test
+        fun `a handler that is itself exceptionally protected is declined`() {
+            val guarded = JAssignStmt(local("r0"), IntConstant.getInstance(1), pos)
+            val handler = JNopStmt(pos)
+            val nestedHandler = JNopStmt(pos)
+
+            val graph = MutableBlockStmtGraph()
+            graph.addNode(guarded)
+            graph.addNode(handler)
+            graph.addNode(nestedHandler)
+            graph.setStartingStmt(guarded)
+            graph.addExceptionalEdge(guarded, exceptionType, handler)
+            graph.addExceptionalEdge(handler, exceptionType, nestedHandler) // handler is itself trapped
+
+            val preserved = SuspendChainReconstructor.resolvePreservableExceptionalEdges(graph, guarded) { listOf(it) }
+
+            assertNull(preserved, "a handler that is itself exceptionally protected must be declined")
+        }
+
+        /**
+         * A handler that resolves to nothing real (e.g. a dead bookkeeping-only
+         * chain) must decline rather than silently drop the edge.
+         */
+        @Test
+        fun `a handler that resolves to nothing real is declined`() {
+            val guarded = JAssignStmt(local("r0"), IntConstant.getInstance(1), pos)
+            val handler = JNopStmt(pos)
+
+            val graph = MutableBlockStmtGraph()
+            graph.addNode(guarded)
+            graph.addNode(handler)
+            graph.setStartingStmt(guarded)
+            graph.addExceptionalEdge(guarded, exceptionType, handler)
+
+            val preserved = SuspendChainReconstructor.resolvePreservableExceptionalEdges(graph, guarded) { emptyList() }
+
+            assertNull(preserved, "a handler resolving to nothing real must be declined")
+        }
     }
 }

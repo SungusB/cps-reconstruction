@@ -66,6 +66,13 @@ class CpgData {
     val ddgEdges: MutableSet<CpgEdge> = linkedSetOf()
     val cdgEdges: MutableSet<CpgEdge> = linkedSetOf()
 
+    /**
+     * Exceptional (trap) edges — kept separate from [cfgEdges] so [cfgSuccessors]/
+     * [cfgPredecessors] and the CDG/DDG built over them stay normal-flow-only; see
+     * [EdgeKind.EXCEPTIONAL].
+     */
+    val exceptionalEdges: MutableSet<CpgEdge> = linkedSetOf()
+
     /** AST parent-child structural edges (see [JimpleAstBuilder]). */
     val astEdges: MutableSet<CpgEdge> = linkedSetOf()
 
@@ -351,6 +358,7 @@ class CpgData {
     fun countCfgEdges(): Int = cfgEdges.size
     fun countDdgEdges(): Int = ddgEdges.size
     fun countCdgEdges(): Int = cdgEdges.size
+    fun countExceptionalEdges(): Int = exceptionalEdges.size
     fun countAstNodes(): Int = astNodes.size
     fun countAstEdges(): Int = astEdges.size
 
@@ -414,6 +422,13 @@ class CpgData {
                             }
                         }
                     }
+                }
+            }
+
+            for ((stmt, srcIdx) in data.stmtToIndex) {
+                for ((exceptionType, handler) in stmtGraph.exceptionalSuccessors(stmt).entries) {
+                    val dstIdx = data.stmtToIndex[handler] ?: continue
+                    data.exceptionalEdges.add(CpgEdge(srcIdx, dstIdx, EdgeKind.EXCEPTIONAL, condition = exceptionType.toString()))
                 }
             }
 
