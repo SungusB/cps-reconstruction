@@ -1,7 +1,8 @@
-// GROUND TRUTH (proposed — pending confirmation)
-// expect: UNSUPPORTED
+// GROUND TRUTH (confirmed — verified via scripts/run_ablation.sh)
+// expect: FLOW (reconstructed)
 // note: suspend call inside a for loop over a range — compiles to an
-//       iterator-driven loop with the same kind of back-edge as `while`.
+//       iterator-driven loop with the same kind of back-edge as `while`,
+//       and reconstructs the same way.
 package benchmark.loops.forloop
 
 suspend fun identity(x: String): String {

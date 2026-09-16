@@ -1,7 +1,8 @@
-// GROUND TRUTH (proposed — pending confirmation)
-// expect: UNSUPPORTED
+// GROUND TRUTH (confirmed — verified via scripts/run_ablation.sh)
+// expect: FLOW (reconstructed)
 // note: suspend call inside a do-while loop — condition is checked at the
-//       end, but the back-edge shape is the same class of problem.
+//       end, but the back-edge shape is the same class of problem, and
+//       reconstructs the same way.
 package benchmark.loops.dowhileloop
 
 suspend fun identity(x: String): String {

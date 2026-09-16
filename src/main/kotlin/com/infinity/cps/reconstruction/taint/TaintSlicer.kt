@@ -114,11 +114,26 @@ object TaintSlicer {
             backwardAdj[i] = mutableListOf()
         }
 
+        // Taint propagates over DDG (value/data dependence) edges only. CDG
+        // (control dependence) edges used to be included here too, which is an
+        // over-approximation verified to produce real false positives: it treats
+        // "this statement executes conditionally on a branch that used tainted
+        // data" as equivalent to "this statement's value depends on tainted
+        // data," which is a claim about *implicit* information flow (Denning
+        // 1976), not the explicit data flow this tool's benchmarks are written
+        // against. Confirmed via benchmark/control/04_tainted_guard_clause_unrelated_sink.kt
+        // and 05_tainted_branch_no_early_exit.kt (an ordinary tainted `if`, no
+        // coroutines at all, whose branch body assigns an unrelated literal —
+        // reported as a flow purely because that assignment is control-dependent
+        // on the tainted condition) and independently by
+        // benchmark/flow/*.kt (see CLAUDE.md). DDG alone is sufficient for every
+        // other benchmark in the suite — none of them depend on control
+        // dependence for their sink to actually use the tainted value, since
+        // real code always does that via an ordinary assignment DDG already
+        // captures. If a future benchmark genuinely needs implicit-flow
+        // detection, it should be a separate, explicitly-labeled analysis pass,
+        // not a silent addition to this adjacency list.
         for (edge in data.ddgEdges) {
-            forwardAdj[edge.src]?.add(edge.dst)
-            backwardAdj[edge.dst]?.add(edge.src)
-        }
-        for (edge in data.cdgEdges) {
             forwardAdj[edge.src]?.add(edge.dst)
             backwardAdj[edge.dst]?.add(edge.src)
         }

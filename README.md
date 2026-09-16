@@ -192,17 +192,28 @@ not a bug.
 
 What reconstruction demonstrably changes is **how much of the method a
 taint analyzer has to look at to explain the same flow**: `scripts/compare_ablation.py`
-reports `methodStats[].statementCount` (CPG size) and `.chopSize` (the
-minimal slice explaining a flow) per method from each `summary.json`. On the
-methods reconstruction actually rewrites, both shrink substantially — e.g.
-`singleHop` goes from 49 to 23 statements and a 6- to 4-statement chop,
-`identityChain` from 70 to 42 statements and a 10- to 6-statement chop —
-because label writes, spill-field reads/writes, the suspend-check `if`, and
-the switch itself no longer have to be traversed or read to reach the same
-conclusion. Methods reconstruction doesn't touch (general-case-unsupported,
-or not a coroutine state machine at all) are identical on both sides, which
-is why the script also reports a "reconstructed methods only" breakout
-rather than just an aggregate over the whole benchmark suite.
+reports `methodStats[].statementCount` (CPG size) per method from each
+`summary.json`. On the methods reconstruction actually rewrites, this
+shrinks substantially — e.g. `singleHop` goes from 49 to 23 statements,
+`identityChain` from 70 to 42 — because label writes, spill-field
+reads/writes, the suspend-check `if`, and the switch itself no longer have
+to be traversed or read to reach the same conclusion. Methods reconstruction
+doesn't touch (general-case-unsupported, or not a coroutine state machine at
+all) are identical on both sides, which is why the script also reports a
+"reconstructed methods only" breakout rather than just an aggregate over the
+whole benchmark suite.
+
+`methodStats[].chopSize` (the minimal slice explaining a flow) is also
+reported, but is **not** currently good ablation evidence: it used to shrink
+alongside statement count, but that shrinkage was largely a side effect of a
+now-fixed `TaintSlicer` bug (it treated control-dependence edges as
+taint-propagating, which inflated the *unreconstructed* chop with spurious
+paths through the same suspend-check `if`s reconstruction strips — see
+`CLAUDE.md` for the verified false-positive benchmarks that found this).
+Post-fix, chop size is close to identical with and without reconstruction
+across the current suite — an expected result, the same way flow-count
+parity is, not a regression. Statement count is the metric that actually
+demonstrates reconstruction's value.
 
 ## License
 

@@ -44,12 +44,25 @@ import java.io.PrintWriter
  * source-to-sink path for any suspend-chain shape (straight-line, branches,
  * or loops), independent of whether the dispatch machinery is stripped. What
  * reconstruction demonstrably changes is *how much of the method a taint
- * analyzer has to look at to explain that flow*: `methodStats[].chopSize` and
- * `.statementCount` — the size of the CPG and of the minimal slice
- * explaining a flow — shrink substantially once dispatch bookkeeping (label
- * writes, spill-field reads/writes, the suspend-check `if`, the switch
- * itself) is stripped, because that bookkeeping no longer has to be
+ * analyzer has to look at to explain that flow*: `methodStats[].statementCount`
+ * — the size of the CPG — shrinks substantially once dispatch bookkeeping
+ * (label writes, spill-field reads/writes, the suspend-check `if`, the
+ * switch itself) is stripped, because that bookkeeping no longer has to be
  * traversed or reasoned about to establish the same flow.
+ *
+ * `methodStats[].chopSize` is reported too but is **not** currently reliable
+ * evidence of the same effect: until [com.infinity.cps.reconstruction.taint.TaintSlicer]'s
+ * CDG-as-taint-propagating-edge over-approximation was fixed (see
+ * `TaintSlicer.slice()`'s comment and `CLAUDE.md`), chop size before
+ * reconstruction was inflated by spurious control-dependence chains through
+ * the very suspend-check `if`s reconstruction removes — meaning the
+ * chop-size reduction previously attributed to reconstruction was largely an
+ * artifact of that bug, not reconstruction's own effect. Post-fix, chop size
+ * is close to identical with and without reconstruction across the current
+ * benchmark suite (verified via `scripts/run_ablation.sh`), which is the
+ * *expected* result now, the same way flow-count parity always was —
+ * `statementCount` is the metric that actually demonstrates reconstruction's
+ * value.
  */
 fun main(args: Array<String>) {
     val positional = args.filterNot { it.startsWith("--") }
@@ -145,11 +158,16 @@ private fun sliceAndExport(
     val methodStats = mutableListOf<MethodStats>()
 
     for (methodSig in methods) {
+        // Bug found via benchmark/flow/*.kt (see CLAUDE.md): view.getMethod() is subject to
+        // the documented MutableJavaView staleness bug, so it must not gate whether a
+        // reconstructed method is processed at all — only methods with neither a
+        // reconstructed body nor a resolvable original body should be skipped here.
+        val reconstructedBody = reconstructedBodies[methodSig]
         val methodOpt = view.getMethod(methodSig)
-        if (methodOpt.isEmpty || !methodOpt.get().hasBody()) continue
+        if (reconstructedBody == null && (methodOpt.isEmpty || !methodOpt.get().hasBody())) continue
 
         val cpgData = analyzer.getCpg(methodSig.toString())
-            ?: reconstructedBodies[methodSig]?.let { CpgData.fromBody(it.stmtGraph, methodSig.toString()) }
+            ?: reconstructedBody?.let { CpgData.fromBody(it.stmtGraph, methodSig.toString()) }
             ?: CpgData.fromMethod(methodOpt.get())
         if (cpgData.countStatements() < 2) continue
 
@@ -174,7 +192,7 @@ private fun sliceAndExport(
 
         if (!slice.hasVulnerability() && slice.taintFlows.isEmpty()) continue
 
-        val safeName = "${methodSig.declClassType.className}_${methodOpt.get().name}"
+        val safeName = "${methodSig.declClassType.className}_${methodSig.name}"
         exportArtifacts(cpgData, slice, safeName, dirs)
 
         methodStats.add(MethodStats(methodSig, cpgData.countStatements(), slice.chop.size))

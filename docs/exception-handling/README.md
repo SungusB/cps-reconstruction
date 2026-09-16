@@ -344,33 +344,47 @@ finding, not a second real flow; see §6 for why.)
 
 ### Explanation size — the metric that actually reflects reconstruction's effect
 
+**Updated in a later session** (see `CLAUDE.md`): the `chopSize` numbers
+originally reported here were measured before a `TaintSlicer` bug was found
+and fixed — it treated control-dependence (CDG) edges as taint-propagating,
+which inflated the *unreconstructed* chop with spurious paths through the
+same suspend-check `if`s reconstruction strips. Re-run after the fix, chop
+size is now identical with and without reconstruction for every method in
+this category; `statementCount` is the metric that actually demonstrates
+reconstruction's effect, both then and now. Numbers below are from the
+post-fix run, reproduced the same way as originally (`scripts/run_ablation.sh
+benchmark/try-catch`), not hand-computed:
+
 | Method | Stmts (with) | Stmts (without) | Chop (with) | Chop (without) |
 |---|---|---|---|---|
-| `suspendInTry` (01) | 13 | 60 | 4 | 6 |
-| `suspendInFinally` (02, still declined) | 88 | 88 | 6 | 6 |
-| `suspendAfterCatch` (03) | 16 | 63 | 7 | 9 |
+| `suspendInTry` (01) | 13 | 60 | 4 | 4 |
+| `suspendInFinally` (02, still declined) | 88 | 88 | 4 | 4 |
+| `suspendAfterCatch` (03) | 16 | 63 | 7 | 7 |
 
 Reconstructed methods only (01 and 03; 02 is identical on both sides,
 confirming it's genuinely untouched rather than partially/incorrectly
 transformed):
 
 - statements: 29 with reconstruction vs. 123 without (**−76.4%**)
-- chop size: 11 with reconstruction vs. 15 without (**−26.7%**)
+- chop size: 11 with reconstruction vs. 11 without (**+0.0%**, expected
+  post-fix — see the update note above, not a sign reconstruction has no
+  effect on explanation size; statement count is the metric that shows that)
 
-This is directly comparable to the general-case (branch/loop) numbers
-already in the top-level `README.md` (e.g. `singleHop` 49→23 statements),
-and to the loop/if-else numbers from the same `run_ablation.sh` run this
-document's DOT files came from — the exceptional-edge case shrinks by
-roughly the same order of magnitude as ordinary general-case reconstruction,
-which is what "this is dispatch-bookkeeping removal, not a fundamentally
-different transformation" should look like.
+This statement-count reduction is directly comparable to the general-case
+(branch/loop) numbers already in the top-level `README.md` (e.g. `singleHop`
+49→23 statements) — the exceptional-edge case shrinks by roughly the same
+order of magnitude as ordinary general-case reconstruction, which is what
+"this is dispatch-bookkeeping removal, not a fundamentally different
+transformation" should look like.
 
-Running the harness against the whole `benchmark/` suite (all 14 methods
-with findings, not just the 3 try-catch ones) shows the fix causing no
-regression to any previously-established number: flow-count parity holds
-everywhere (14 with, 14 without), and 10 of 14 methods now reconstruct (up
-from 8 before this change), consistent with adding exactly the two newly
-solvable try-catch benchmarks to the previously-reconstructed set.
+Running the harness against the whole `benchmark/` suite shows the fix
+causing no regression to any previously-established *flow* number:
+flow-count parity still holds everywhere. The exact "N of M methods
+reconstruct" and total suite size have both changed since this section was
+first written, as more benchmark categories were added in later sessions —
+see `CLAUDE.md`'s "Current status" for the up-to-date figures rather than
+treating the numbers above as anything beyond this one category's own
+evaluation.
 
 ## 8. `.dot` files
 
@@ -413,12 +427,17 @@ suspend call itself.
 verified to compile to a nested/self-referential trap, a materially
 different and harder shape, not an unhandled instance of the same one.
 
-**Not exercised by any current benchmark, and not claimed to work:**
-multiple independent (non-nested) try/catch blocks in the same method;
-a try/catch nested inside a branch or loop body that `unrollGeneralCase`
-already handles; a suspend call inside the exception-check condition of a
-`catch (e: SpecificException)` with multiple catch clauses (multiple
-exception types on the same protected range — `exceptionalSuccessors`
-returns a `Map<ClassType, Stmt>`, so the current per-type loop should
-handle this structurally, but it hasn't been checked against a real
-compiled example with two `catch` clauses, so it isn't asserted here).
+**Also handled, confirmed by new benchmarks (not just structural argument):**
+multiple independent (non-nested) try/catch blocks in the same method
+(`benchmark/try-catch/04_multiple_independent_try_catch.kt` — 92→21
+statements, 10→6 chop size without/with reconstruction); a try/catch nested
+inside a loop body (`benchmark/try-catch/05_try_catch_in_loop.kt` — 76→20
+statements, 10→5 chop size; the same code path also covers a try/catch
+nested inside an `if` branch, since the general-case walk doesn't
+special-case where a protected statement sits in the CFG); and multiple
+`catch` clauses on the same protected range
+(`benchmark/try-catch/06_multiple_catch_clauses.kt` — 64→17 statements, 6→4
+chop size — `exceptionalSuccessors` returns a `Map<ClassType, Stmt>`, and
+`resolvePreservableExceptionalEdges`'s per-type loop preserves every entry,
+exactly as expected structurally). All three were re-verified via
+`scripts/run_ablation.sh`, not assumed from the structural argument alone.

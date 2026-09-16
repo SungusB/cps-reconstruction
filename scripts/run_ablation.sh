@@ -22,13 +22,16 @@ WITHOUT_DIR="$WORK_DIR/without-reconstruction"
 rm -rf "$WORK_DIR"
 mkdir -p "$CLASSES_DIR" "$WITH_DIR" "$WITHOUT_DIR"
 
+echo "[*] Resolving kotlinx-coroutines-core for benchmark/concurrency/*.kt ..."
+COROUTINES_CP="$(cd "$ROOT_DIR" && ./gradlew -q printBenchmarkClasspath --console=plain 2>/dev/null || gradle -q printBenchmarkClasspath --console=plain)"
+
 echo "[*] Compiling benchmark suite from $BENCHMARK_DIR ..."
 mapfile -t KOTLIN_FILES < <(find "$BENCHMARK_DIR" -name "*.kt" | sort)
 if [ "${#KOTLIN_FILES[@]}" -eq 0 ]; then
   echo "No .kt files found under $BENCHMARK_DIR" >&2
   exit 1
 fi
-kotlinc "${KOTLIN_FILES[@]}" -d "$CLASSES_DIR"
+kotlinc "${KOTLIN_FILES[@]}" -cp "$COROUTINES_CP" -d "$CLASSES_DIR"
 
 echo "[*] Building the reconstruction tool (gradle installDist) ..."
 (cd "$ROOT_DIR" && ./gradlew installDist --console=plain -q 2>/dev/null || gradle installDist --console=plain -q)

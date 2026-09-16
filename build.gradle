@@ -18,6 +18,14 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    // Not a dependency of the analysis tool itself — only resolved so
+    // scripts/run_ablation.sh can put a real kotlinx-coroutines-core jar on
+    // kotlinc's classpath when compiling benchmark/concurrency/*.kt, which
+    // reference async/await/coroutineScope/supervisorScope/withContext.
+    benchmarkCoroutines
+}
+
 dependencies {
     // SootUp for CPG construction
     implementation 'org.soot-oss:sootup.core:2.0.0'
@@ -27,8 +35,16 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    benchmarkCoroutines 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1'
 }
 
 test {
     useJUnitPlatform()
+}
+
+tasks.register('printBenchmarkClasspath') {
+    doLast {
+        println configurations.benchmarkCoroutines.asPath
+    }
 }

@@ -1,7 +1,9 @@
-// GROUND TRUTH (proposed — pending confirmation)
-// expect: UNSUPPORTED
+// GROUND TRUTH (confirmed — verified via scripts/run_ablation.sh)
+// expect: FLOW (reconstructed)
 // note: the suspend call only happens inside the `if` branch — a genuine
 //       conditional (JIfStmt) sits between the source and the suspend call.
+//       SuspendChainReconstructor.unrollGeneralCase walks the branch's real
+//       CFG successors and reconstructs this instead of declining.
 package benchmark.ifelse.thenbranch
 
 suspend fun identity(x: String): String {

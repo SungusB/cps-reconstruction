@@ -12,13 +12,18 @@ Reports two things:
    loops) — this was verified directly against the raw Jimple for several
    benchmarks, not assumed. A zero delta here is expected, not a bug.
 
-2. Explanation size (the actual ablation signal): statementCount and
-   chopSize per method, from `methodStats` in each summary. Reconstruction's
-   real, measurable effect is shrinking the CPG and the minimal slice that
-   explains a flow, by stripping label writes, spill-field read/writes, the
-   suspend-check `if`, and the switch itself — bookkeeping a taint analyzer
-   (or a human) would otherwise have to traverse or read to reach the same
-   conclusion.
+2. Explanation size: statementCount and chopSize per method, from
+   `methodStats` in each summary. `statementCount` (CPG size) is the actual
+   ablation signal — reconstruction's real, measurable effect is shrinking
+   it by stripping label writes, spill-field read/writes, the suspend-check
+   `if`, and the switch itself. `chopSize` (the minimal slice explaining a
+   flow) is reported too but is no longer reliable evidence of the same
+   effect: it used to shrink substantially as well, but that was largely an
+   artifact of TaintSlicer treating CDG edges as taint-propagating (fixed —
+   see CLAUDE.md), which inflated the *unreconstructed* chop with spurious
+   control-dependence chains through the same suspend-check `if`s
+   reconstruction removes. Post-fix, chop-size parity (near-zero delta) is
+   the expected result, the same way flow-count parity always was.
 
 Usage: compare_ablation.py <with-summary.json> <without-summary.json>
 """
@@ -135,6 +140,9 @@ def print_explanation_size_table(with_summary, without_summary):
               f"({100.0 * (two_stmts - tw_stmts) / two_stmts:+.1f}%)")
         print(f"  chop size:  with={tw_chop}   without={two_chop}   "
               f"({100.0 * (two_chop - tw_chop) / two_chop:+.1f}%)")
+        if abs(tw_chop - two_chop) <= max(1, 0.1 * two_chop):
+            print("  (near-zero chop delta is EXPECTED post-CDG-fix — see this script's")
+            print("   module docstring. statementCount above is the metric that matters.)")
     else:
         print("")
         print("No method's statementCount differed between the two runs — reconstruction may not")

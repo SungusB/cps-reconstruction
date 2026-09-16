@@ -1,7 +1,8 @@
-// GROUND TRUTH (proposed — pending confirmation)
-// expect: UNSUPPORTED
+// GROUND TRUTH (confirmed — verified via scripts/run_ablation.sh)
+// expect: FLOW (reconstructed)
 // note: a suspend call in *both* branches of the conditional — still real
-//       branching logic between suspension points, just symmetric.
+//       branching logic between suspension points, just symmetric. Both
+//       branches reconstruct via unrollGeneralCase's normal-successor walk.
 package benchmark.ifelse.bothbranches
 
 suspend fun identity(x: String): String {
