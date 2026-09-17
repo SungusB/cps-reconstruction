@@ -1,6 +1,6 @@
 # CPS Reconstruction — Project Assessment Summary
 
-*(Written by Claude Fable 5.1, 2026-09-16)*
+*(Written by Claude Fable 5.1, 2026-09-16; updated 2026-09-17 after the FlowDroid baseline run)*
 
 The assessment is written to `CLAUDE.md` as a new section, "Project assessment (2026-09-16)", grounded in a fresh test run and ablation run rather than the existing notes. Nothing was committed.
 
@@ -16,9 +16,13 @@ The assessment is written to `CLAUDE.md` as a new section, "Project assessment (
 
 The only measured effect is that the tool's own graph gets smaller. The claims that would carry a paper, that external tools report false positives on raw coroutine bytecode and that reconstruction generalizes to real projects, are both still predictions. The write-up proposes four research questions (real-project coverage rate, CodeQL/FlowDroid precision, analysis cost, mechanical correctness check) and names SCAM, SOAP, and tool-demo tracks as fallbacks.
 
-## Work remaining, ranked
+## Update 2026-09-17: the FlowDroid baseline is done and positive
 
-The gate on everything is getting reconstructed bodies into class files. Checked the SootUp 2.0.0 jars directly: there is no bytecode writer, only a Jimple printer, so the route is Jimple text into classic Soot, or a port of the walk to classic Soot. Next is a mechanical quotient check between original and reconstructed CFGs to replace hand-verification, then a JVM-only real-world corpus, then threats to validity and a second compiler version.
+The Soot port of the walk plus an in-process FlowDroid harness (`scripts/run_baseline.sh`) now exist and run over the whole suite. FlowDroid reports 20 flows with reconstruction vs 23 without; the 3 extra are exactly the `spill-slot/01`–`03` `NO-FLOW` benchmarks, no real flow is lost, and the mechanism (resumption via the `invokeSuspend` entry point through an unknown `label`) was confirmed by a diagnostic that removes that entry point. Reconstructed bodies are also emitted as `.class` files, so the CodeQL half of the experiment is unblocked. Three harness bugs were found and fixed on the way (Soot releasing bodies after class emission, FlowDroid's constant propagation deleting a source-holding branch, and Kotlin taint-wrapper rules keyed on the `StringsKt` facade instead of the declaring class). All uncommitted. Details and exact numbers: `CLAUDE.md`, "FlowDroid external baseline — DONE".
+
+## Work remaining, ranked (original 2026-09-16 text)
+
+~~The gate on everything is getting reconstructed bodies into class files.~~ Done, see above. Next: CodeQL on the emitted classes, then a mechanical quotient check between original and reconstructed CFGs to replace hand-verification, then a JVM-only real-world corpus, then threats to validity and a second compiler version.
 
 ## Rust transfer: the technique ports, the problem mostly does not
 

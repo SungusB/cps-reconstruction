@@ -32,9 +32,16 @@
 //       Verified via scripts/run_ablation.sh: the false positive is gone,
 //       all real flows unchanged, 02/03 (which were already on the
 //       general-case walk) were never affected.
-//       This file is also an input for the external-baseline experiment
-//       (FlowDroid/CodeQL on raw vs. reconstructed bytecode), which is
-//       still to be run.
+//       EXTERNAL BASELINE (FlowDroid 2.14.1, scripts/run_baseline.sh): on
+//       the raw bytecode FlowDroid reports exactly the predicted false
+//       positive (this file, 02 and 03; 04's real flow is found either
+//       way); on the reconstructed bytecode it does not. Verified mechanism:
+//       the continuation class's `invokeSuspend` is an entry point (that is
+//       how the runtime resumes), so the tainted `L$0` store from one
+//       invocation reaches the case-2 reload through the dispatch switch on
+//       the next; `baseline --no-invokesuspend-entry` removes the false
+//       positive on raw bytecode, confirming it needs the resumption path.
+//       CodeQL on the emitted `.class` files is still to be run.
 package benchmark.spillslot.runblockscopes
 
 suspend fun tick(): Int = 1

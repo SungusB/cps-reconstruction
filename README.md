@@ -227,6 +227,108 @@ across the current suite — an expected result, the same way flow-count
 parity is, not a regression. Statement count is the metric that actually
 demonstrates reconstruction's value.
 
+### External baseline: FlowDroid on raw vs. reconstructed bytecode
+
+The ablation above is measured with this project's own (deliberately
+simple) analyzer. The claim that matters to anyone else — that a
+production taint analysis is *wrong* on raw coroutine bytecode in a way
+reconstruction fixes — is tested separately by `scripts/run_baseline.sh`,
+which runs FlowDroid 2.14.1 in-process on the same benchmark classes, with
+and without a classic-Soot port of the reconstruction
+(`baseline/SootSuspendChainReconstructor.kt`) applied to the bodies it
+analyzes. Sources and sinks are the same method patterns the in-house
+analyzer uses. One Soot scene per benchmark package, FlowDroid's default
+`EasyTaintWrapper` extended with rules for the `kotlin.text` string helpers
+(keyed on the classes that *declare* them, not the `StringsKt` facade — a
+rule keyed on the facade never matches).
+
+Result on the current 36-file suite: **FlowDroid reports 20 flows with
+reconstruction and 23 without.** No flow is found only with reconstruction;
+the 3 found only without are exactly `benchmark/spill-slot/01`–`03`, whose
+ground truth is `NO-FLOW`. Every `FLOW` benchmark reports the same
+source→sink pair in both modes. The mechanism was verified rather than
+inferred: FlowDroid reaches the state machine's resumption path through the
+continuation class's `invokeSuspend` entry point, and with the `label`
+unknown it carries a tainted `L$0` spill from one suspension to the reload
+of a different variable from the same field at the next; drop that entry
+point (`baseline --no-invokesuspend-entry`, a diagnostic) and the false
+positives disappear on raw bytecode. On those packages FlowDroid's IFDS
+work also drops 40–70× (e.g. 4990 → 74 edge propagations). No wall-time
+claim is made: on the small packages the time is scene-setup overhead, and
+on the two closure-capture packages it is dominated by FlowDroid's
+path-reconstruction phase hitting its timeout in both modes (the IFDS solve
+itself takes ~15 s either way).
+
+The harness additionally writes the reconstructed bodies out as `.class`
+files (`--emit-classes`, via Soot's ASM backend), which is the input any
+other bytecode-consuming tool (CodeQL is next) needs. Two things it does
+*not* show: `benchmark/concurrency/*` and `benchmark/flow/*` are 0/0 in both
+modes because `kotlinx.coroutines` is kept out of the Soot scene, so
+`async`/`await`/channels are opaque to FlowDroid regardless of
+reconstruction; and per-package wall time is not a meaningful comparison
+below a second (fixed scene-setup overhead dominates).
+
+## Status, limitations, and open work
+
+What is established, with the evidence behind it:
+
+- **Reconstruction works on every shape in the suite except `finally`.**
+  36 of 37 suspend state machines across 36 benchmark files reconstruct;
+  the one decline is a suspend call inside `finally`, which kotlinc
+  compiles to a self-referential trap the walk deliberately refuses
+  (`docs/exception-handling/README.md`). Each shape was checked against
+  `javap` before being trusted.
+- **It removes real false positives from a production analysis.** FlowDroid
+  on raw coroutine bytecode reports 3 flows that do not exist (spill-slot
+  conflation, `benchmark/spill-slot/`); on reconstructed bytecode it does
+  not, and it loses no true flow. The mechanism was confirmed by ablating
+  the resumption entry point.
+- **It shrinks what an analysis has to look at.** −78.8% statements on
+  reconstructed methods for the in-house CPG; 40–70× fewer IFDS edge
+  propagations for FlowDroid on the affected packages.
+
+What is not established, in the order it matters:
+
+1. **Generality.** Every subject is a hand-written single-method file, and
+   only one compiler/target (`kotlinc 2.4.20`, bytecode 52) has been
+   checked. How often real code produces the spill-slot shape, what
+   fraction of real state machines reconstruct, and what new decline
+   reasons appear are all unmeasured. Shapes known to be unexercised: a
+   user `when` inside a suspend body, `suspendCoroutine` /
+   `suspendCancellableCoroutine`, tail-call suspend functions, `inline` /
+   `crossinline` suspend lambdas, `CancellationException` under
+   try/catch, and anything post-R8/D8.
+2. **Soundness of the walk** rests on per-benchmark hand-verification
+   against `javap` plus an ablation. The branch/loop walk and bridge-`goto`
+   synthesis have no unit tests, and the classic-Soot port has none at
+   all. A mechanical check that each reconstruction is the
+   bookkeeping-quotient of its original — every real statement kept once,
+   every edge backed by an original path — would replace the hand-checking
+   and has not been written.
+3. **A second external tool.** Only FlowDroid has been run. The
+   reconstructed `.class` files needed for CodeQL are emitted but no CodeQL
+   comparison exists yet.
+4. **Cost.** No defensible wall-time result: the harness's per-package
+   timings are dominated by scene setup on small inputs and by FlowDroid's
+   path-builder timeout (identical in both modes) on large ones. Edge
+   propagations are the only cost figure reported.
+5. **What FlowDroid cannot see here, regardless of reconstruction.**
+   `kotlinx.coroutines` is excluded from the Soot scene (its frontend
+   crashes on some of the library's bodies), so `async`/`await`,
+   `Channel`, and `Flow` are opaque and `benchmark/concurrency/*` and
+   `benchmark/flow/*` report nothing in either mode. The taint-wrapper
+   rules for Kotlin's stdlib cover 25 `kotlin.text` helpers; taint through
+   any other stdlib helper is silently dropped in both modes — a rule that
+   fails to match looks exactly like a true negative.
+6. **The in-house analyzer** is a measurement client, not a competitor to
+   FlowDroid: field writes have no kill (`FieldAliasTracker`), container-
+   and callback-mediated flow is unmodeled, and coroutine-ABI detection is
+   string-based. Its numbers should not be read as precision/recall of a
+   taint tool.
+7. **Exceptional edges are visible in the CPG but are not control
+   dependencies** (Choi et al., PASTE 1999, is the relevant model), and the
+   AST layer is exported to JSON only, not to the DOT views.
+
 ## License
 
 BSD 3-Clause — see [LICENSE](LICENSE). Copyright Marcio Aparecido de Godoi

@@ -37,6 +37,7 @@ dependencies {
     // them in-process, and Soot's bytecode backend can emit .class files.
     implementation 'org.soot-oss:soot:4.6.0'
     implementation 'de.fraunhofer.sit.sse.flowdroid:soot-infoflow:2.14.1'
+    runtimeOnly 'org.slf4j:slf4j-simple:2.0.16'
 
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
@@ -47,6 +48,19 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+// Second launcher, installed next to the main one as bin/baseline: the
+// FlowDroid external-baseline harness (BaselineCli).
+tasks.register('baselineStartScripts', CreateStartScripts) {
+    mainClass = 'com.infinity.cps.reconstruction.baseline.BaselineCliKt'
+    applicationName = 'baseline'
+    outputDir = file("$buildDir/baseline-scripts")
+    classpath = tasks.startScripts.classpath
+    defaultJvmOpts = ['-Xss16m', '-Xmx6g']
+}
+distributions.main.contents {
+    into('bin') { from(tasks.baselineStartScripts); filePermissions { unix(0755) } }
 }
 
 tasks.register('printBenchmarkClasspath') {
