@@ -1,4 +1,4 @@
-// GROUND TRUTH (proposed — pending confirmation)
+// GROUND TRUTH (confirmed)
 // expect: NO-FLOW
 // note: negative control for this category — the source is read outside the
 //       lambda but never captured into it; the lambda's sink only ever sees

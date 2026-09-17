@@ -37,15 +37,13 @@ import sootup.java.core.views.MutableJavaView
  * a class implementing `ContinuationImpl`/`SuspendLambda` with a `label`
  * field, spill fields (`L$0`, `L$1`, ...) that persist locals across
  * suspension points, and a `tableswitch` dispatching on `label`. This class
- * strips that dispatch bookkeeping and splices the case blocks back into one
- * linear body — but only when doing so is sound.
- *
- * Reconstruction is sound only for a straight-line suspend chain: one or
- * more suspend calls with no other control flow between them. A method with
- * real branching or looping between suspension points is left completely
- * untouched (see [findUnsupportedControlFlow]) and recorded in
- * [getUnsupportedMethods] instead of being partially or incorrectly
- * unrolled.
+ * recovers the method's real control flow by walking the `label == 0` fast
+ * path over the original CFG and eliding every piece of dispatch bookkeeping
+ * it meets — see [unrollGeneralCase] for the structural argument. Branches,
+ * loops, and single-level try/catch are handled; a method whose shape can't
+ * be resolved soundly (a suspend call inside `finally`, most notably) is left
+ * completely untouched and recorded in [getUnsupportedMethods] instead of
+ * being partially or incorrectly unrolled.
  */
 class SuspendChainReconstructor(private val view: JavaView) {
 
@@ -334,12 +332,23 @@ class SuspendChainReconstructor(private val view: JavaView) {
     }
 
     /**
-     * Unrolls one coroutine's switch into a sequential body:
-     * 1. Find the switch and its case targets.
-     * 2. Extract each case block (target up to its return or goto).
-     * 3. Bail if any block has real control flow ([findUnsupportedControlFlow]).
-     * 4. Strip dispatch bookkeeping (label writes, spill writes, gotos, the switch itself).
-     * 5. Splice the remaining statements into one new [Body].
+     * Reconstructs one coroutine state machine via [unrollGeneralCase], or
+     * declines and records why.
+     *
+     * Every shape goes through the general-case fast-path walk, including a
+     * plain straight-line chain. An earlier straight-line-only path spliced the
+     * switch's case blocks end to end instead; it was retired because its
+     * spill-field stripping never matched SootUp's Jimple rendering, so the
+     * continuation's `L$n` spill/reload traffic survived into the reconstructed
+     * body, and splicing made every state sequentially reachable. When kotlinc
+     * reuses one spill field for two different variables in disjoint scopes
+     * (`benchmark/spill-slot/01_run_block_scopes.kt`), that produced a DDG edge
+     * from a tainted spill to an unrelated later reload — a false positive that
+     * only existed *with* reconstruction. The fast-path walk never emits spill
+     * fields, so the hazard can't arise.
+     *
+     * [findUnsupportedControlFlow] is kept purely to label a decline with a
+     * human-readable reason; it no longer gates anything.
      */
     private fun unrollCoroutine(method: SootMethod): Body? {
         val body = method.body
@@ -347,76 +356,17 @@ class SuspendChainReconstructor(private val view: JavaView) {
 
         val switchStmt = stmts.filterIsInstance<JSwitchStmt>().firstOrNull() ?: return null
 
-        val caseTargets = switchStmt.getTargetStmts(body)
-        val defaultTargetOpt = switchStmt.getDefaultTarget(body)
-        val orderedTargets = caseTargets.toMutableList()
-        if (defaultTargetOpt.isPresent) orderedTargets.add(defaultTargetOpt.get())
-        if (orderedTargets.isEmpty()) return null
+        unrollGeneralCase(method)?.let { return it }
 
+        val orderedTargets = switchStmt.getTargetStmts(body).toMutableList()
+        switchStmt.getDefaultTarget(body).ifPresent { orderedTargets.add(it) }
         val caseBlocks = orderedTargets.map { extractCaseBlock(stmts, it) }.filter { it.isNotEmpty() }
-        if (caseBlocks.isEmpty()) return null
+        val reason = findUnsupportedControlFlow(body.stmtGraph, caseBlocks, orderedTargets.toSet())
+            ?: "general-case walk could not resolve every real edge to a real statement"
 
-        val dispatchTargets = orderedTargets.toSet()
-        val unsupportedReason = findUnsupportedControlFlow(body.stmtGraph, caseBlocks, dispatchTargets)
-        if (unsupportedReason != null) {
-            // A real conditional, a loop back-edge, or a single-level try/catch is
-            // exactly what the general-case path (unrollGeneralCase) is for — it now
-            // preserves a resolvable exceptional edge instead of declining on sight.
-            // It still declines on its own (see its doc comment) for a handler that is
-            // itself exceptionally protected — Kotlin's finally-with-suspend shape.
-            val general = unrollGeneralCase(method)
-            if (general != null) return general
-            unsupportedMethods.add(method.signature)
-            println("[SuspendChainReconstructor] general-case-unsupported: ${method.signature} — $unsupportedReason")
-            return null
-        }
-
-        val unrolledStmts = mutableListOf<Stmt>()
-        val usedLocals = linkedSetOf<Local>()
-
-        for (caseIdx in caseBlocks.indices) {
-            val isLastCase = caseIdx == caseBlocks.size - 1
-            for (stmt in caseBlocks[caseIdx]) {
-                if (isLabelAssignment(stmt)) continue
-                if ((stmt is JReturnStmt || stmt is JReturnVoidStmt) && !isLastCase) continue // intermediate suspend return
-                if (stmt is JGotoStmt) continue
-                if (stmt is BranchingStmt) continue // the switch itself, or bookkeeping already cleared above
-                if (isBoxingWrite(stmt)) continue
-
-                collectLocals(stmt, usedLocals)
-                unrolledStmts.add(stmt)
-            }
-        }
-        if (unrolledStmts.isEmpty()) return null
-
-        val dedupedStmts = mutableListOf<Stmt>()
-        val seen = linkedSetOf<Stmt>()
-        for (s in unrolledStmts) {
-            if (seen.add(s)) dedupedStmts.add(s)
-        }
-        if (dedupedStmts.isEmpty()) return null
-
-        // Everything after the first return/throw belongs to a different case
-        // block and would be unreachable in the spliced body.
-        val truncatedStmts = mutableListOf<Stmt>()
-        for (s in dedupedStmts) {
-            truncatedStmts.add(s)
-            if (s is JReturnStmt || s is JReturnVoidStmt || s is JThrowStmt) break
-        }
-
-        val freshBuilder = Body.builder()
-        freshBuilder.setMethodSignature(body.methodSignature)
-        freshBuilder.setLocals(usedLocals)
-        freshBuilder.setPosition(body.position)
-
-        val freshGraph: MutableStmtGraph = freshBuilder.stmtGraph
-        freshGraph.setStartingStmt(truncatedStmts[0])
-        freshGraph.addBlock(truncatedStmts)
-
-        println("[SuspendChainReconstructor] unrolled ${method.signature}: "
-            + "${caseBlocks.size} states -> ${unrolledStmts.size} statements")
-
-        return freshBuilder.build()
+        unsupportedMethods.add(method.signature)
+        println("[SuspendChainReconstructor] general-case-unsupported: ${method.signature} — $reason")
+        return null
     }
 
     /**
@@ -480,8 +430,10 @@ class SuspendChainReconstructor(private val view: JavaView) {
         if (case0Index !in targets.indices) return null
         val case0Target = targets[case0Index]
 
+        // Empty for a state machine with no suspension points (e.g. a suspend
+        // lambda whose body never suspends): then no `if` is a suspended-check
+        // and no return is a suspended-return, and the walk is just the body.
         val sentinelNames = findSentinelLocalNames(body)
-        if (sentinelNames.isEmpty()) return null
 
         val entry = resolveGeneralCaseTarget(case0Target, graph, sentinelNames, linkedSetOf())
         if (entry.isEmpty()) return null
@@ -660,15 +612,15 @@ class SuspendChainReconstructor(private val view: JavaView) {
     private fun isBookkeepingCallName(methodName: String): Boolean =
         methodName == "throwOnFailure" || methodName == "nullOutSpilledVariable"
 
-    private fun isLabelAssignment(stmt: Stmt): Boolean {
-        val s = stmt.toString()
-        return (s.contains("label") && s.contains("fieldput")) ||
-            (s.contains("label") && s.contains("specialinvoke") && s.contains("="))
-    }
-
-    private fun isBoxingWrite(stmt: Stmt): Boolean {
-        val s = stmt.toString()
-        return s.contains("fieldput") && (s.contains("L$") || s.contains("\$context"))
+    private fun collectLocals(stmt: Stmt, locals: MutableSet<Local>) {
+        stmt.uses.forEach { value ->
+            if (value is Local) locals.add(value)
+            if (value is AbstractInvokeExpr) {
+                value.args.forEach { arg -> if (arg is Local) locals.add(arg) }
+            }
+        }
+        val def: LValue? = stmt.def.orElse(null)
+        if (def is Local) locals.add(def)
     }
 
     private fun extractCaseBlock(allStmts: List<Stmt>, startStmt: Stmt): List<Stmt> {
@@ -684,14 +636,4 @@ class SuspendChainReconstructor(private val view: JavaView) {
         return block
     }
 
-    private fun collectLocals(stmt: Stmt, locals: MutableSet<Local>) {
-        stmt.uses.forEach { value ->
-            if (value is Local) locals.add(value)
-            if (value is AbstractInvokeExpr) {
-                value.args.forEach { arg -> if (arg is Local) locals.add(arg) }
-            }
-        }
-        val def: LValue? = stmt.def.orElse(null)
-        if (def is Local) locals.add(def)
-    }
 }

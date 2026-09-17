@@ -17,6 +17,13 @@
 //       existing `unrollCoroutine` path, not unrollGeneralCase — two
 //       concurrent forks still doesn't produce a CFG shape distinct from an
 //       ordinary sequential suspend chain from the caller's side.
+//       [Update: the straight-line splice path referred to above has since
+//       been retired — every chain now goes through the general-case
+//       fast-path walk, which also elides the continuation's spill/reload
+//       traffic, so current with-reconstruction statement counts are lower
+//       than the ones quoted here (re-run scripts/run_ablation.sh). The
+//       mechanism claim — one ordinary suspend call from the caller's
+//       perspective — is unchanged. See benchmark/spill-slot/01 for why.]
 package benchmark.concurrency.multipleasync
 
 import kotlinx.coroutines.CoroutineScope

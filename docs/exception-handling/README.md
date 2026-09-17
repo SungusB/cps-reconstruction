@@ -247,7 +247,13 @@ reason containing `"try/catch"` skipped the general-case attempt entirely
 (a deliberate hard decline, back when `unrollGeneralCase` had no way to
 handle it). Every reason now gets the same general-case attempt branches
 and loops already did — `unrollGeneralCase`'s own exceptional-edge logic is
-what decides whether that attempt succeeds.
+what decides whether that attempt succeeds. (Since then the routing has been
+simplified further: `unrollGeneralCase` is now the *only* reconstruction —
+the straight-line splice path it used to fall back from was retired after
+`benchmark/spill-slot/01_run_block_scopes.kt` showed it produced a false
+positive, see the top-level `README.md`. `findUnsupportedControlFlow` is
+kept only to label a decline with a reason. None of the try/catch numbers
+in §7 are affected; those methods were already on the general-case walk.)
 
 Both changes are in `src/main/kotlin/com/infinity/cps/reconstruction/reconstruct/SuspendChainReconstructor.kt`.
 

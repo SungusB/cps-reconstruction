@@ -330,8 +330,16 @@ object TaintSlicer {
         val flows = mutableListOf<TaintFlow>()
         val backwardDdg = buildBackwardDdg(data)
 
+        // Deliberately scans every statement, not intraResult.forwardSlice:
+        // `new Closure` takes no operands, so it's never itself data-tainted
+        // and never appears in a DDG forward slice from the source — only the
+        // *following* `<init>` invoke (which reads the captured argument) is.
+        // Filtering candidate sites by forwardSlice membership here excluded
+        // every real candidate; the actual taint check already happens below
+        // via isArgTaintedByDdg, so this loop only needs to enumerate `new`
+        // sites, not pre-filter them.
         for (srcIdx in intraResult.sourceStmts) {
-            for (idx in intraResult.forwardSlice) {
+            for (idx in data.stmtLabels.indices) {
                 val assign = data.indexToStmt[idx] as? JAssignStmt ?: continue
                 if (assign.rightOp !is JNewExpr) continue
 

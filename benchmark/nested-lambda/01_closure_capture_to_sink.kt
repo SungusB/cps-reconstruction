@@ -1,14 +1,17 @@
-// GROUND TRUTH (proposed — pending confirmation)
+// GROUND TRUTH (confirmed)
 // expect: FLOW
-// note: EXERCISES THE LEAST-VALIDATED MECHANISM IN THE TOOL — the outer
-//       function reads a source and captures it into a nested suspend
-//       lambda's closure; the lambda's own body sinks it. Captured
+// note: the outer function reads a source and captures it into a nested
+//       suspend lambda's closure; the lambda's own body sinks it. Captured
 //       variables compile to constructor-param-to-field writes, not method
 //       arguments, so this needs TaintSlicer.findCapturedFieldFlows
-//       specifically, not the ordinary call-argument path. This mechanism
-//       has NOT yet been validated against real compiled bytecode (unlike
-//       the other categories) — treat this file's expectation with extra
-//       scrutiny.
+//       specifically, not the ordinary call-argument path. This was
+//       unvalidated (and, it turned out, silently broken) from the
+//       project's first commit until it was fixed and confirmed via
+//       scripts/run_ablation.sh — see CLAUDE.md's "findCapturedFieldFlows
+//       filtered out every real candidate" entry for the root cause
+//       (TaintSlicer.kt's candidate loop scanned only `intraResult.forwardSlice`,
+//       which a `new` expression never appears in since it takes no
+//       operands — only the following `<init>` invoke is data-tainted).
 package benchmark.nestedlambda.capturetosink
 
 import kotlin.coroutines.Continuation

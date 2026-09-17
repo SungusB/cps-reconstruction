@@ -30,21 +30,33 @@ as well. See **Scope** below for the precise, verified boundary.
 
 ## Scope
 
-**Current scope:** straight-line suspend chains (`unrollCoroutine`), plus a
-general case (`unrollGeneralCase`) that also reconstructs a suspend call
-inside `if`/`else`, a `while`/`for` loop, and a single (non-nested)
-`try`/`catch` — including one that doesn't even wrap the suspend call
-itself. The general case works by walking the method's real CFG from its
-`label == 0` entry point (the "didn't actually suspend" fast path Kotlin's
-coroutine ABI always emits as ordinary sequential bytecode ahead of the
-dispatch switch) and eliding dispatch bookkeeping by rewiring around it,
-rather than text-slicing case blocks — so it isn't pattern-matching specific
-shapes, it's a general transformation over whatever real control flow that
-fast path contains, exceptional edges included. See
-`SuspendChainReconstructor.kt`'s `unrollGeneralCase` doc comment for the
-verified structural argument this relies on, and
+**Current scope:** every coroutine state machine goes through one
+reconstruction (`SuspendChainReconstructor.unrollGeneralCase`): a plain
+straight-line suspend chain, a suspend call inside `if`/`else` or a
+`while`/`for` loop, and a single (non-nested) `try`/`catch` — including one
+that doesn't even wrap the suspend call itself. It works by walking the
+method's real CFG from its `label == 0` entry point (the "didn't actually
+suspend" fast path Kotlin's coroutine ABI always emits as ordinary
+sequential bytecode ahead of the dispatch switch) and eliding dispatch
+bookkeeping — label reads/writes, `L$n`/`I$n` spill and reload traffic, the
+suspended-check `if`s, `throwOnFailure`/`nullOutSpilledVariable` — by
+rewiring around it, rather than text-slicing case blocks. So it isn't
+pattern-matching specific shapes; it's a general transformation over
+whatever real control flow that fast path contains, exceptional edges
+included. See `SuspendChainReconstructor.kt`'s `unrollGeneralCase` doc
+comment for the verified structural argument this relies on, and
 `docs/exception-handling/README.md` for the try/catch case specifically
 (mechanism, literature, evaluation).
+
+An earlier straight-line-only path that spliced the switch's case blocks
+end to end was retired after `benchmark/spill-slot/01_run_block_scopes.kt`
+showed it produced a false positive: it left the continuation's spill
+fields in the reconstructed body, and kotlinc reuses one spill field for
+different variables in disjoint scopes, so a tainted spill at one suspension
+point reached an unrelated reload at the next. The fast-path walk never
+emits spill fields, so that hazard can't arise — which is also the first
+result in this project where reconstruction changes an analysis *outcome*
+rather than only the size of the graph.
 
 **Explicitly out of scope:** a suspend call inside `finally` — verified
 directly against compiled bytecode (not assumed) to compile to a nested,

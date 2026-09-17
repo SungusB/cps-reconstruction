@@ -14,6 +14,13 @@
 //       plain (no try/catch) shape; a `withContext` interacting with a
 //       `catch (e: CancellationException)` is not covered by this file and
 //       stays an open question.
+//       [Update: the straight-line splice path referred to above has since
+//       been retired — every chain now goes through the general-case
+//       fast-path walk, which also elides the continuation's spill/reload
+//       traffic, so current with-reconstruction statement counts are lower
+//       than the ones quoted here (re-run scripts/run_ablation.sh). The
+//       mechanism claim — one ordinary suspend call from the caller's
+//       perspective — is unchanged. See benchmark/spill-slot/01 for why.]
 package benchmark.concurrency.withcontext
 
 import kotlinx.coroutines.Dispatchers

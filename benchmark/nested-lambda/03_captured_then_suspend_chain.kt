@@ -1,8 +1,10 @@
-// GROUND TRUTH (proposed — pending confirmation)
+// GROUND TRUTH (confirmed)
 // expect: FLOW
 // note: like 01, but the captured value goes through a straight-line
 //       suspend chain *inside* the lambda before reaching the sink — tests
 //       that capture-bridging and suspend-chain reconstruction compose.
+//       Was silently broken by the same findCapturedFieldFlows bug as 01
+//       until fixed; see that file's note.
 package benchmark.nestedlambda.capturedthenchain
 
 import kotlin.coroutines.Continuation
