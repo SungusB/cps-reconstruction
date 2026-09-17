@@ -32,6 +32,12 @@ dependencies {
     implementation 'org.soot-oss:sootup.java.core:2.0.0'
     implementation 'org.soot-oss:sootup.java.bytecode.frontend:2.0.0'
 
+    // Classic Soot (via FlowDroid) for the external-baseline experiment:
+    // reconstruction is ported onto Soot bodies so FlowDroid can consume
+    // them in-process, and Soot's bytecode backend can emit .class files.
+    implementation 'org.soot-oss:soot:4.6.0'
+    implementation 'de.fraunhofer.sit.sse.flowdroid:soot-infoflow:2.14.1'
+
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
