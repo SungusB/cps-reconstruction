@@ -1,0 +1,53 @@
+digraph CFG {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: len#0 = 0 (line 15)"];
+  1 [label="1: if flag#0 == 0 (line 16)"];
+  2 [label="2: secret#0 = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 17)"];
+  3 [label="3: #l6 = (kotlin.coroutines.Continuation) $continuation (line 18)"];
+  4 [label="4: $stack17 = staticinvoke <benchmark.spillslot.ifblockscopes._02_if_block_scopesKt: java.lang.Object tick(kotlin.coroutines.Continuation)>(#l6) (line 18)"];
+  5 [label="5: len#0 = virtualinvoke secret#0.<java.lang.String: int length()>() (line 19)"];
+  6 [label="6: if flag#0 != 0 (line 21)"];
+  7 [label="7: secret#1 = \"constant\" (line 22)"];
+  8 [label="8: #l9 = (kotlin.coroutines.Continuation) $continuation (line 23)"];
+  9 [label="9: $stack16 = staticinvoke <benchmark.spillslot.ifblockscopes._02_if_block_scopesKt: java.lang.Object tick(kotlin.coroutines.Continuation)>(#l9) (line 23)"];
+  10 [label="10: $stack12 = <java.lang.System: java.io.PrintStream out> (line 24)"];
+  11 [label="11: virtualinvoke $stack12.<java.io.PrintStream: void println(java.lang.Object)>(secret#1) (line 24)"];
+  12 [label="12: $stack13 = staticinvoke <kotlin.coroutines.jvm.internal.Boxing: java.lang.Integer boxInt(int)>(len#0) (line 26)"];
+  13 [label="13: return $stack13 (line 26)"];
+
+  0 -> 1 [color="blue"];
+  1 -> 2 [color="blue"];
+  1 -> 6 [color="blue"];
+  2 -> 3 [color="blue"];
+  3 -> 4 [color="blue"];
+  4 -> 5 [color="blue"];
+  5 -> 6 [color="blue"];
+  6 -> 7 [color="blue"];
+  6 -> 12 [color="blue"];
+  7 -> 8 [color="blue"];
+  8 -> 9 [color="blue"];
+  9 -> 10 [color="blue"];
+  10 -> 11 [color="blue"];
+  11 -> 12 [color="blue"];
+  12 -> 13 [color="blue"];
+  3 -> 4 [color="green", label="#l6", style=dashed];
+  2 -> 5 [color="green", label="secret#0", style=dashed];
+  8 -> 9 [color="green", label="#l9", style=dashed];
+  10 -> 11 [color="green", label="$stack12", style=dashed];
+  7 -> 11 [color="green", label="secret#1", style=dashed];
+  0 -> 12 [color="green", label="len#0", style=dashed];
+  5 -> 12 [color="green", label="len#0", style=dashed];
+  12 -> 13 [color="green", label="$stack13", style=dashed];
+  1 -> 2 [color="red", style=dotted, label="flag#0 == 0"];
+  1 -> 3 [color="red", style=dotted, label="flag#0 == 0"];
+  1 -> 4 [color="red", style=dotted, label="flag#0 == 0"];
+  1 -> 5 [color="red", style=dotted, label="flag#0 == 0"];
+  6 -> 7 [color="red", style=dotted, label="flag#0 != 0"];
+  6 -> 8 [color="red", style=dotted, label="flag#0 != 0"];
+  6 -> 9 [color="red", style=dotted, label="flag#0 != 0"];
+  6 -> 10 [color="red", style=dotted, label="flag#0 != 0"];
+  6 -> 11 [color="red", style=dotted, label="flag#0 != 0"];
+}

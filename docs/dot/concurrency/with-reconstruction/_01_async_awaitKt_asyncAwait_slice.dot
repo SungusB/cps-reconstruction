@@ -1,0 +1,24 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret#0 = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 38)", fillcolor="#FF6666", style="filled"];
+  1 [label="1: $stack15 = new benchmark.concurrency.asyncawait._01_async_awaitKt$asyncAwait$deferred$1 (line 39)", fillcolor="white", style="filled"];
+  2 [label="2: specialinvoke $stack15.<benchmark.concurrency.asyncawait._01_async_awaitKt$asyncAwait$deferred$1: void <init>(java.lang.String,kotlin.coroutines.Continuation)>(secret#0, null) (line 39)", fillcolor="#FFFF99", style="filled"];
+  3 [label="3: $stack16 = (kotlin.jvm.functions.Function2) $stack15 (line 39)", fillcolor="#FFFF99", style="filled"];
+  4 [label="4: deferred#0 = staticinvoke <kotlinx.coroutines.BuildersKt: kotlinx.coroutines.Deferred async$default(kotlinx.coroutines.CoroutineScope,kotlin.coroutines.CoroutineContext,kotlinx.coroutines.CoroutineStart,kotlin.jvm.functions.Function2,int,java.lang.Object)>(scope#0, null, null, $stack16, 3, null) (line 39)", fillcolor="#FFFF99", style="filled"];
+  5 [label="5: #l14 = (kotlin.coroutines.Continuation) $continuation (line 40)", fillcolor="white", style="filled"];
+  6 [label="6: $stack20 = interfaceinvoke deferred#0.<kotlinx.coroutines.Deferred: java.lang.Object await(kotlin.coroutines.Continuation)>(#l14) (line 40)", fillcolor="#FFFF99", style="filled"];
+  7 [label="7: result = (java.lang.String) $stack20 (line 37)", fillcolor="#FFFF99", style="filled"];
+  8 [label="8: $stack14 = <java.lang.System: java.io.PrintStream out> (line 41)", fillcolor="white", style="filled"];
+  9 [label="9: virtualinvoke $stack14.<java.io.PrintStream: void println(java.lang.Object)>(result) (line 41)", fillcolor="#FFAA00", style="filled"];
+  10 [label="10: return result (line 42)", fillcolor="white", style="filled"];
+
+  0 -> 2 [color="green", label="secret#0", style=dashed];
+  3 -> 4 [color="green", label="$stack16", style=dashed];
+  4 -> 6 [color="green", label="deferred#0", style=dashed];
+  6 -> 7 [color="green", label="$stack20", style=dashed];
+  7 -> 9 [color="green", label="result", style=dashed];
+  2 -> 3 [color="green", label="$stack15", style=dashed];
+}

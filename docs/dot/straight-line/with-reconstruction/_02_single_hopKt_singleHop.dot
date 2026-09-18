@@ -1,0 +1,29 @@
+digraph CFG {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret#0 = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 11)"];
+  1 [label="1: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(secret#0) (line 12)"];
+  2 [label="2: #l9 = (kotlin.coroutines.Continuation) $continuation (line 12)"];
+  3 [label="3: $stack12 = staticinvoke <benchmark.straightline.singlehop._02_single_hopKt: java.lang.Object passthrough(java.lang.String,kotlin.coroutines.Continuation)>(secret#0, #l9) (line 12)"];
+  4 [label="4: result = (java.lang.String) $stack12 (line 10)"];
+  5 [label="5: $stack10 = <java.lang.System: java.io.PrintStream out> (line 13)"];
+  6 [label="6: virtualinvoke $stack10.<java.io.PrintStream: void println(java.lang.Object)>(result) (line 13)"];
+  7 [label="7: return result (line 14)"];
+
+  0 -> 1 [color="blue"];
+  1 -> 2 [color="blue"];
+  2 -> 3 [color="blue"];
+  3 -> 4 [color="blue"];
+  4 -> 5 [color="blue"];
+  5 -> 6 [color="blue"];
+  6 -> 7 [color="blue"];
+  0 -> 1 [color="green", label="secret#0", style=dashed];
+  2 -> 3 [color="green", label="#l9", style=dashed];
+  0 -> 3 [color="green", label="secret#0", style=dashed];
+  3 -> 4 [color="green", label="$stack12", style=dashed];
+  5 -> 6 [color="green", label="$stack10", style=dashed];
+  4 -> 6 [color="green", label="result", style=dashed];
+  4 -> 7 [color="green", label="result", style=dashed];
+}

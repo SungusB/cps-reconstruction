@@ -1,0 +1,24 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret#0 = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 34)", fillcolor="#FF6666", style="filled"];
+  1 [label="1: $stack11 = staticinvoke <kotlinx.coroutines.Dispatchers: kotlinx.coroutines.CoroutineDispatcher getDefault()>() (line 35)", fillcolor="white", style="filled"];
+  2 [label="2: $stack15 = (kotlin.coroutines.CoroutineContext) $stack11 (line 35)", fillcolor="white", style="filled"];
+  3 [label="3: $stack12 = new benchmark.concurrency.withcontext._04_with_contextKt$withContextSwitch$result$1 (line 35)", fillcolor="white", style="filled"];
+  4 [label="4: specialinvoke $stack12.<benchmark.concurrency.withcontext._04_with_contextKt$withContextSwitch$result$1: void <init>(java.lang.String,kotlin.coroutines.Continuation)>(secret#0, null) (line 35)", fillcolor="#FFFF99", style="filled"];
+  5 [label="5: $stack14 = (kotlin.jvm.functions.Function2) $stack12 (line 35)", fillcolor="#FFFF99", style="filled"];
+  6 [label="6: #l8 = (kotlin.coroutines.Continuation) $continuation (line 35)", fillcolor="white", style="filled"];
+  7 [label="7: $stack16 = staticinvoke <kotlinx.coroutines.BuildersKt: java.lang.Object withContext(kotlin.coroutines.CoroutineContext,kotlin.jvm.functions.Function2,kotlin.coroutines.Continuation)>($stack15, $stack14, #l8) (line 35)", fillcolor="#FFFF99", style="filled"];
+  8 [label="8: result = (java.lang.String) $stack16 (line 33)", fillcolor="#FFFF99", style="filled"];
+  9 [label="9: $stack10 = <java.lang.System: java.io.PrintStream out> (line 38)", fillcolor="white", style="filled"];
+  10 [label="10: virtualinvoke $stack10.<java.io.PrintStream: void println(java.lang.Object)>(result) (line 38)", fillcolor="#FFAA00", style="filled"];
+  11 [label="11: return result (line 39)", fillcolor="white", style="filled"];
+
+  0 -> 4 [color="green", label="secret#0", style=dashed];
+  5 -> 7 [color="green", label="$stack14", style=dashed];
+  7 -> 8 [color="green", label="$stack16", style=dashed];
+  8 -> 10 [color="green", label="result", style=dashed];
+  4 -> 5 [color="green", label="$stack12", style=dashed];
+}

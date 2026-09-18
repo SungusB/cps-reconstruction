@@ -1,0 +1,23 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: this := @this: benchmark.nestedlambda.capturetosink._01_closure_capture_to_sinkKt$closureCaptureToSink$1 (line 30)", fillcolor="white", style="filled"];
+  1 [label="1: $result := @parameter0: java.lang.Object (line 30)", fillcolor="white", style="filled"];
+  2 [label="2: staticinvoke <kotlin.coroutines.intrinsics.IntrinsicsKt: java.lang.Object getCOROUTINE_SUSPENDED()>()", fillcolor="white", style="filled"];
+  3 [label="3: $stack2 = this.<benchmark.nestedlambda.capturetosink._01_closure_capture_to_sinkKt$closureCaptureToSink$1: int label> (line 30)", fillcolor="white", style="filled"];
+  4 [label="4: switch($stack2) {     case 0:     default:  } (line 30)", fillcolor="white", style="filled"];
+  5 [label="5: staticinvoke <kotlin.ResultKt: void throwOnFailure(java.lang.Object)>($result) (line 30)", fillcolor="white", style="filled"];
+  6 [label="6: $stack3 = this.<benchmark.nestedlambda.capturetosink._01_closure_capture_to_sinkKt$closureCaptureToSink$1: java.lang.String $secret> (line 31)", fillcolor="white", style="filled"];
+  7 [label="7: $stack4 = <java.lang.System: java.io.PrintStream out> (line 31)", fillcolor="white", style="filled"];
+  8 [label="8: virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.Object)>($stack3) (line 31)", fillcolor="#FFAA00", style="filled"];
+  9 [label="9: $stack5 = <kotlin.Unit: kotlin.Unit INSTANCE> (line 32)", fillcolor="white", style="filled"];
+  10 [label="10: return $stack5 (line 32)", fillcolor="white", style="filled"];
+  11 [label="11: $stack6 = new java.lang.IllegalStateException (line 30)", fillcolor="white", style="filled"];
+  12 [label="12: #l1 = (java.lang.IllegalStateException) $stack6 (line 30)", fillcolor="white", style="filled"];
+  13 [label="13: specialinvoke #l1.<java.lang.IllegalStateException: void <init>(java.lang.String)>(\"call to \\'resume\\' before \\'invoke\\' with coroutine\") (line 30)", fillcolor="white", style="filled"];
+  14 [label="14: #l0 = (java.lang.Throwable) $stack6 (line 30)", fillcolor="white", style="filled"];
+  15 [label="15: throw #l0 (line 30)", fillcolor="white", style="filled"];
+
+}

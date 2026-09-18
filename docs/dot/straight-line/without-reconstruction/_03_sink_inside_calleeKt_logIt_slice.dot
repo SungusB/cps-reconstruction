@@ -1,0 +1,14 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: x := @parameter0: java.lang.String (line 10)", fillcolor="white", style="filled"];
+  1 [label="1: $completion := @parameter1: kotlin.coroutines.Continuation (line 10)", fillcolor="white", style="filled"];
+  2 [label="2: prefixed = x (line 10)", fillcolor="white", style="filled"];
+  3 [label="3: $stack3 = <java.lang.System: java.io.PrintStream out> (line 11)", fillcolor="white", style="filled"];
+  4 [label="4: virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.Object)>(x) (line 11)", fillcolor="#FFAA00", style="filled"];
+  5 [label="5: $stack4 = <kotlin.Unit: kotlin.Unit INSTANCE> (line 12)", fillcolor="white", style="filled"];
+  6 [label="6: return $stack4 (line 12)", fillcolor="white", style="filled"];
+
+}

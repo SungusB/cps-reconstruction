@@ -1,0 +1,55 @@
+digraph CFG {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 13)"];
+  1 [label="1: result#0 = secret (line 14)"];
+  2 [label="2: i = 0 (line 15)"];
+  3 [label="3: $stack17 = <java.lang.System: java.io.PrintStream out> (line 20)"];
+  4 [label="4: virtualinvoke $stack17.<java.io.PrintStream: void println(java.lang.Object)>(result#0) (line 20)"];
+  5 [label="5: return result#0 (line 21)"];
+  6 [label="6: l5 = result#0 (line 17)"];
+  7 [label="7: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(result#0) (line 17)"];
+  8 [label="8: #l4 = (kotlin.coroutines.Continuation) $continuation (line 17)"];
+  9 [label="9: $stack16 = staticinvoke <benchmark.loops.dowhileloop._03_do_while_loopKt: java.lang.Object identity(java.lang.String,kotlin.coroutines.Continuation)>(result#0, #l4) (line 17)"];
+  10 [label="10: result#0 = (java.lang.String) $stack16 (line 12)"];
+  11 [label="11: i = i + 1 (line 18)"];
+  12 [label="12: if i < count (line 19)"];
+
+  0 -> 1 [color="blue"];
+  1 -> 2 [color="blue"];
+  2 -> 6 [color="blue"];
+  3 -> 4 [color="blue"];
+  4 -> 5 [color="blue"];
+  6 -> 7 [color="blue"];
+  7 -> 8 [color="blue"];
+  8 -> 9 [color="blue"];
+  9 -> 10 [color="blue"];
+  10 -> 11 [color="blue"];
+  11 -> 12 [color="blue"];
+  12 -> 3 [color="blue"];
+  12 -> 6 [color="blue"];
+  0 -> 1 [color="green", label="secret", style=dashed];
+  3 -> 4 [color="green", label="$stack17", style=dashed];
+  10 -> 4 [color="green", label="result#0", style=dashed];
+  10 -> 5 [color="green", label="result#0", style=dashed];
+  1 -> 6 [color="green", label="result#0", style=dashed];
+  10 -> 6 [color="green", label="result#0", style=dashed];
+  1 -> 7 [color="green", label="result#0", style=dashed];
+  10 -> 7 [color="green", label="result#0", style=dashed];
+  8 -> 9 [color="green", label="#l4", style=dashed];
+  1 -> 9 [color="green", label="result#0", style=dashed];
+  10 -> 9 [color="green", label="result#0", style=dashed];
+  9 -> 10 [color="green", label="$stack16", style=dashed];
+  2 -> 11 [color="green", label="i", style=dashed];
+  11 -> 11 [color="green", label="i", style=dashed];
+  11 -> 12 [color="green", label="i", style=dashed];
+  12 -> 6 [color="red", style=dotted, label="i < count"];
+  12 -> 7 [color="red", style=dotted, label="i < count"];
+  12 -> 8 [color="red", style=dotted, label="i < count"];
+  12 -> 9 [color="red", style=dotted, label="i < count"];
+  12 -> 10 [color="red", style=dotted, label="i < count"];
+  12 -> 11 [color="red", style=dotted, label="i < count"];
+  12 -> 12 [color="red", style=dotted, label="i < count"];
+}

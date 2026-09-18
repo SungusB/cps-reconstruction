@@ -1,0 +1,40 @@
+digraph CFG {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret#0 = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 14)"];
+  1 [label="1: result#0 = \"default\" (line 15)"];
+  2 [label="2: if flag#0 == 0 (line 16)"];
+  3 [label="3: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(secret#0) (line 17)"];
+  4 [label="4: #l13 = (kotlin.coroutines.Continuation) $continuation (line 17)"];
+  5 [label="5: $stack15 = staticinvoke <benchmark.ifelse.thenbranch._01_suspend_in_then_branchKt: java.lang.Object identity(java.lang.String,kotlin.coroutines.Continuation)>(secret#0, #l13) (line 17)"];
+  6 [label="6: result#0 = (java.lang.String) $stack15 (line 13)"];
+  7 [label="7: $stack12 = <java.lang.System: java.io.PrintStream out> (line 19)"];
+  8 [label="8: virtualinvoke $stack12.<java.io.PrintStream: void println(java.lang.Object)>(result#0) (line 19)"];
+  9 [label="9: return result#0 (line 20)"];
+
+  0 -> 1 [color="blue"];
+  1 -> 2 [color="blue"];
+  2 -> 3 [color="blue"];
+  2 -> 7 [color="blue"];
+  3 -> 4 [color="blue"];
+  4 -> 5 [color="blue"];
+  5 -> 6 [color="blue"];
+  6 -> 7 [color="blue"];
+  7 -> 8 [color="blue"];
+  8 -> 9 [color="blue"];
+  0 -> 3 [color="green", label="secret#0", style=dashed];
+  4 -> 5 [color="green", label="#l13", style=dashed];
+  0 -> 5 [color="green", label="secret#0", style=dashed];
+  5 -> 6 [color="green", label="$stack15", style=dashed];
+  7 -> 8 [color="green", label="$stack12", style=dashed];
+  1 -> 8 [color="green", label="result#0", style=dashed];
+  6 -> 8 [color="green", label="result#0", style=dashed];
+  1 -> 9 [color="green", label="result#0", style=dashed];
+  6 -> 9 [color="green", label="result#0", style=dashed];
+  2 -> 3 [color="red", style=dotted, label="flag#0 == 0"];
+  2 -> 4 [color="red", style=dotted, label="flag#0 == 0"];
+  2 -> 5 [color="red", style=dotted, label="flag#0 == 0"];
+  2 -> 6 [color="red", style=dotted, label="flag#0 == 0"];
+}

@@ -1,0 +1,24 @@
+digraph CFG {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: x := @parameter0: java.lang.String (line 10)"];
+  1 [label="1: $completion := @parameter1: kotlin.coroutines.Continuation (line 10)"];
+  2 [label="2: prefixed = x (line 10)"];
+  3 [label="3: $stack3 = <java.lang.System: java.io.PrintStream out> (line 11)"];
+  4 [label="4: virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.Object)>(x) (line 11)"];
+  5 [label="5: $stack4 = <kotlin.Unit: kotlin.Unit INSTANCE> (line 12)"];
+  6 [label="6: return $stack4 (line 12)"];
+
+  0 -> 1 [color="blue"];
+  1 -> 2 [color="blue"];
+  2 -> 3 [color="blue"];
+  3 -> 4 [color="blue"];
+  4 -> 5 [color="blue"];
+  5 -> 6 [color="blue"];
+  0 -> 2 [color="green", label="x", style=dashed];
+  3 -> 4 [color="green", label="$stack3", style=dashed];
+  0 -> 4 [color="green", label="x", style=dashed];
+  5 -> 6 [color="green", label="$stack4", style=dashed];
+}

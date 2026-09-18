@@ -1,0 +1,21 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 17)", fillcolor="#FF6666", style="filled"];
+  1 [label="1: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(secret) (line 18)", fillcolor="white", style="filled"];
+  2 [label="2: $stack2 = (java.lang.CharSequence) secret (line 18)", fillcolor="white", style="filled"];
+  3 [label="3: $stack3 = interfaceinvoke $stack2.<java.lang.CharSequence: int length()>() (line 18)", fillcolor="white", style="filled"];
+  4 [label="4: if $stack3 != 0 (line 18)", fillcolor="white", style="filled"];
+  5 [label="5: $stack5 = 1 (line 18)", fillcolor="white", style="filled"];
+  6 [label="6: goto (line 18)", fillcolor="white", style="filled"];
+  7 [label="7: $stack5 = 0 (line 18)", fillcolor="white", style="filled"];
+  8 [label="8: if $stack5 == 0 (line 18)", fillcolor="white", style="filled"];
+  9 [label="9: return \"empty\" (line 19)", fillcolor="white", style="filled"];
+  10 [label="10: result = \"unrelated\" (line 21)", fillcolor="white", style="filled"];
+  11 [label="11: $stack4 = <java.lang.System: java.io.PrintStream out> (line 22)", fillcolor="white", style="filled"];
+  12 [label="12: virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.Object)>(\"unrelated\") (line 22)", fillcolor="#FFAA00", style="filled"];
+  13 [label="13: return \"unrelated\" (line 23)", fillcolor="white", style="filled"];
+
+}

@@ -1,0 +1,16 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: $completion := @parameter0: kotlin.coroutines.Continuation (line 15)", fillcolor="white", style="filled"];
+  1 [label="1: a = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 16)", fillcolor="#FF6666", style="filled"];
+  2 [label="2: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(a) (line 17)", fillcolor="white", style="filled"];
+  3 [label="3: $stack4 = staticinvoke <benchmark.straightline.sinkinsidecallee._03_sink_inside_calleeKt: java.lang.Object logIt(java.lang.String,kotlin.coroutines.Continuation)>(a, $completion) (line 17)", fillcolor="white", style="filled"];
+  4 [label="4: $stack3 = staticinvoke <kotlin.coroutines.intrinsics.IntrinsicsKt: java.lang.Object getCOROUTINE_SUSPENDED()>() (line 17)", fillcolor="white", style="filled"];
+  5 [label="5: if $stack4 != $stack3 (line 17)", fillcolor="white", style="filled"];
+  6 [label="6: return $stack4 (line 17)", fillcolor="white", style="filled"];
+  7 [label="7: $stack5 = <kotlin.Unit: kotlin.Unit INSTANCE> (line 17)", fillcolor="white", style="filled"];
+  8 [label="8: return $stack5 (line 18)", fillcolor="white", style="filled"];
+
+}

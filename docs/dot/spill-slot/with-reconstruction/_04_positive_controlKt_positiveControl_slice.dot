@@ -1,0 +1,25 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: $i$a$-run-_04_positive_controlKt$positiveControl$carried$1#0 = 0 (line 13)", fillcolor="white", style="filled"];
+  1 [label="1: secret#0 = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 14)", fillcolor="#FF6666", style="filled"];
+  2 [label="2: #l1 = (kotlin.coroutines.Continuation) $continuation (line 15)", fillcolor="white", style="filled"];
+  3 [label="3: $stack20 = staticinvoke <benchmark.spillslot.positivecontrol._04_positive_controlKt: java.lang.Object tick(kotlin.coroutines.Continuation)>(#l1) (line 15)", fillcolor="white", style="filled"];
+  4 [label="4: carried = secret#0 (line 13)", fillcolor="#FFFF99", style="filled"];
+  5 [label="5: $i$a$-run-_04_positive_controlKt$positiveControl$carried$1#2 = 0 (line 18)", fillcolor="white", style="filled"];
+  6 [label="6: secret#1 = \"constant\" (line 19)", fillcolor="white", style="filled"];
+  7 [label="7: #l3 = (kotlin.coroutines.Continuation) $continuation (line 20)", fillcolor="white", style="filled"];
+  8 [label="8: $stack19 = staticinvoke <benchmark.spillslot.positivecontrol._04_positive_controlKt: java.lang.Object tick(kotlin.coroutines.Continuation)>(#l3) (line 20)", fillcolor="white", style="filled"];
+  9 [label="9: $stack13 = <java.lang.System: java.io.PrintStream out> (line 21)", fillcolor="white", style="filled"];
+  10 [label="10: virtualinvoke $stack13.<java.io.PrintStream: void println(java.lang.Object)>(secret#1) (line 21)", fillcolor="#FFAA00", style="filled"];
+  11 [label="11: $stack14 = <java.lang.System: java.io.PrintStream out> (line 22)", fillcolor="white", style="filled"];
+  12 [label="12: virtualinvoke $stack14.<java.io.PrintStream: void println(java.lang.Object)>(carried) (line 22)", fillcolor="#FFAA00", style="filled"];
+  13 [label="13: $stack15 = virtualinvoke carried.<java.lang.String: int length()>() (line 24)", fillcolor="white", style="filled"];
+  14 [label="14: $stack16 = staticinvoke <kotlin.coroutines.jvm.internal.Boxing: java.lang.Integer boxInt(int)>($stack15) (line 24)", fillcolor="white", style="filled"];
+  15 [label="15: return $stack16 (line 24)", fillcolor="white", style="filled"];
+
+  1 -> 4 [color="green", label="secret#0", style=dashed];
+  4 -> 12 [color="green", label="carried", style=dashed];
+}

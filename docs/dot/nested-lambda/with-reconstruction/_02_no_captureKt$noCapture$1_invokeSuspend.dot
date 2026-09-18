@@ -1,0 +1,16 @@
+digraph CFG {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: $stack3 = <java.lang.System: java.io.PrintStream out> (line 25)"];
+  1 [label="1: virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.Object)>(\"constant, not tainted\") (line 25)"];
+  2 [label="2: $stack4 = <kotlin.Unit: kotlin.Unit INSTANCE> (line 26)"];
+  3 [label="3: return $stack4 (line 26)"];
+
+  0 -> 1 [color="blue"];
+  1 -> 2 [color="blue"];
+  2 -> 3 [color="blue"];
+  0 -> 1 [color="green", label="$stack3", style=dashed];
+  2 -> 3 [color="green", label="$stack4", style=dashed];
+}

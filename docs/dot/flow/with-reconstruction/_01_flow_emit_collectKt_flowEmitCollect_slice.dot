@@ -1,0 +1,26 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret#0 = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 39)", fillcolor="#FF6666", style="filled"];
+  1 [label="1: $stack15 = new kotlin.jvm.internal.Ref$ObjectRef (line 40)", fillcolor="white", style="filled"];
+  2 [label="2: specialinvoke $stack15.<kotlin.jvm.internal.Ref$ObjectRef: void <init>()>() (line 40)", fillcolor="white", style="filled"];
+  3 [label="3: result = $stack15 (line 40)", fillcolor="white", style="filled"];
+  4 [label="4: $stack15.<kotlin.jvm.internal.Ref$ObjectRef: java.lang.Object element> = \"default\" (line 40)", fillcolor="white", style="filled"];
+  5 [label="5: $stack16 = new benchmark.flow.emitcollect._01_flow_emit_collectKt$flowEmitCollect$2 (line 41)", fillcolor="white", style="filled"];
+  6 [label="6: specialinvoke $stack16.<benchmark.flow.emitcollect._01_flow_emit_collectKt$flowEmitCollect$2: void <init>(java.lang.String,kotlin.coroutines.Continuation)>(secret#0, null) (line 41)", fillcolor="white", style="filled"];
+  7 [label="7: $stack17 = (kotlin.jvm.functions.Function2) $stack16 (line 41)", fillcolor="white", style="filled"];
+  8 [label="8: $stack21 = staticinvoke <kotlinx.coroutines.flow.FlowKt: kotlinx.coroutines.flow.Flow flow(kotlin.jvm.functions.Function2)>($stack17) (line 41)", fillcolor="white", style="filled"];
+  9 [label="9: $stack18 = new benchmark.flow.emitcollect._01_flow_emit_collectKt$flowEmitCollect$3 (line 43)", fillcolor="white", style="filled"];
+  10 [label="10: specialinvoke $stack18.<benchmark.flow.emitcollect._01_flow_emit_collectKt$flowEmitCollect$3: void <init>(kotlin.jvm.internal.Ref$ObjectRef)>($stack15) (line 43)", fillcolor="white", style="filled"];
+  11 [label="11: $stack20 = (kotlinx.coroutines.flow.FlowCollector) $stack18 (line 43)", fillcolor="white", style="filled"];
+  12 [label="12: #l4 = (kotlin.coroutines.Continuation) $continuation (line 43)", fillcolor="white", style="filled"];
+  13 [label="13: $stack22 = interfaceinvoke $stack21.<kotlinx.coroutines.flow.Flow: java.lang.Object collect(kotlinx.coroutines.flow.FlowCollector,kotlin.coroutines.Continuation)>($stack20, #l4) (line 43)", fillcolor="white", style="filled"];
+  14 [label="14: $stack12 = result.<kotlin.jvm.internal.Ref$ObjectRef: java.lang.Object element> (line 46)", fillcolor="white", style="filled"];
+  15 [label="15: $stack13 = <java.lang.System: java.io.PrintStream out> (line 46)", fillcolor="white", style="filled"];
+  16 [label="16: virtualinvoke $stack13.<java.io.PrintStream: void println(java.lang.Object)>($stack12) (line 46)", fillcolor="#FFAA00", style="filled"];
+  17 [label="17: $stack14 = result.<kotlin.jvm.internal.Ref$ObjectRef: java.lang.Object element> (line 47)", fillcolor="white", style="filled"];
+  18 [label="18: return $stack14 (line 47)", fillcolor="white", style="filled"];
+
+}

@@ -104,7 +104,8 @@ benchmark/       hand-written Kotlin fixtures, one per control-flow shape
 scripts/         the ablation harness (with vs. without reconstruction)
 docs/            deeper write-ups for specific reconstruction cases (currently:
                  exception-handling/, the try/catch case — mechanism, literature,
-                 evaluation, and the .dot files backing it)
+                 evaluation) and dot/, the raw vs. reconstructed CPG of every
+                 benchmark as Graphviz .dot files (see docs/dot/README.md)
 ```
 
 ## Code Property Graph construction

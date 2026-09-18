@@ -1,0 +1,22 @@
+digraph CFG {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 13)"];
+  1 [label="1: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(secret) (line 14)"];
+  2 [label="2: result = staticinvoke <benchmark.control.ordinaryhelper._02_ordinary_helper_functionKt: java.lang.String identity(java.lang.String)>(secret) (line 14)"];
+  3 [label="3: $stack2 = <java.lang.System: java.io.PrintStream out> (line 15)"];
+  4 [label="4: virtualinvoke $stack2.<java.io.PrintStream: void println(java.lang.Object)>(result) (line 15)"];
+  5 [label="5: return (line 16)"];
+
+  0 -> 1 [color="blue"];
+  1 -> 2 [color="blue"];
+  2 -> 3 [color="blue"];
+  3 -> 4 [color="blue"];
+  4 -> 5 [color="blue"];
+  0 -> 1 [color="green", label="secret", style=dashed];
+  0 -> 2 [color="green", label="secret", style=dashed];
+  3 -> 4 [color="green", label="$stack2", style=dashed];
+  2 -> 4 [color="green", label="result", style=dashed];
+}

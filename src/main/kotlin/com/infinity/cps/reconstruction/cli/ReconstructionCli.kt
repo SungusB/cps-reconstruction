@@ -190,10 +190,18 @@ private fun sliceAndExport(
         slice.taintFlows.clear()
         slice.taintFlows.addAll(dedupedFlows)
 
-        if (!slice.hasVulnerability() && slice.taintFlows.isEmpty()) continue
-
+        // Export the CFG/slice `.dot`s for every method that so much as mentions a
+        // source or a sink, not only for the ones where a flow was found: the
+        // `expect: NO-FLOW` benchmarks (e.g. `benchmark/spill-slot/01`–`03`) are the
+        // ones where the raw-vs-reconstructed CFG is most worth looking at, and they
+        // were previously invisible in `cfg/` precisely because nothing was reported.
+        // The stats/findings gate below is unchanged, so `summary.json` is unaffected.
         val safeName = "${methodSig.declClassType.className}_${methodSig.name}"
-        exportArtifacts(cpgData, slice, safeName, dirs)
+        if (slice.sourceStmts.isNotEmpty() || slice.sinkStmts.isNotEmpty()) {
+            exportArtifacts(cpgData, slice, safeName, dirs)
+        }
+
+        if (!slice.hasVulnerability() && slice.taintFlows.isEmpty()) continue
 
         methodStats.add(MethodStats(methodSig, cpgData.countStatements(), slice.chop.size))
 

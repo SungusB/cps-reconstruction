@@ -1,0 +1,33 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret#0 = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 17)", fillcolor="#FF6666", style="filled"];
+  1 [label="1: a#0 = \"default\" (line 18)", fillcolor="white", style="filled"];
+  2 [label="2: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(secret#0) (line 20)", fillcolor="white", style="filled"];
+  3 [label="3: $stack30 := @caughtexception", fillcolor="white", style="filled"];
+  4 [label="4: e#0 = $stack30 (line 21)", fillcolor="white", style="filled"];
+  5 [label="5: a#1 = \"error-a\" (line 22)", fillcolor="white", style="filled"];
+  6 [label="6: #l11 = (kotlin.coroutines.Continuation) $continuation (line 20)", fillcolor="white", style="filled"];
+  7 [label="7: $stack23 = staticinvoke <benchmark.trycatch.multipleblocks._04_multiple_independent_try_catchKt: java.lang.Object identity(java.lang.String,kotlin.coroutines.Continuation)>(secret#0, #l11) (line 20)", fillcolor="#FFFF99", style="filled"];
+  8 [label="8: a#1 = (java.lang.String) $stack23 (line 20)", fillcolor="#FFFF99", style="filled"];
+  9 [label="9: $stack20 = staticinvoke <benchmark.trycatch.multipleblocks._04_multiple_independent_try_catchKt: java.lang.Object identity(java.lang.String,kotlin.coroutines.Continuation)>(a#1, #l12) (line 26)", fillcolor="#FFFF99", style="filled"];
+  10 [label="10: e#2 = (java.lang.String) $stack20 (line 26)", fillcolor="#FFFF99", style="filled"];
+  11 [label="11: $stack29 := @caughtexception", fillcolor="white", style="filled"];
+  12 [label="12: e_1 = $stack29 (line 27)", fillcolor="white", style="filled"];
+  13 [label="13: e#2 = \"error-b\" (line 28)", fillcolor="white", style="filled"];
+  14 [label="14: goto", fillcolor="white", style="filled"];
+  15 [label="15: $stack14 = <java.lang.System: java.io.PrintStream out> (line 30)", fillcolor="white", style="filled"];
+  16 [label="16: virtualinvoke $stack14.<java.io.PrintStream: void println(java.lang.Object)>(e#2) (line 30)", fillcolor="#FFAA00", style="filled"];
+  17 [label="17: return e#2 (line 31)", fillcolor="white", style="filled"];
+  18 [label="18: goto", fillcolor="white", style="filled"];
+  19 [label="19: e#1 = \"default\" (line 24)", fillcolor="white", style="filled"];
+  20 [label="20: #l12 = (kotlin.coroutines.Continuation) $continuation (line 26)", fillcolor="white", style="filled"];
+
+  0 -> 7 [color="green", label="secret#0", style=dashed];
+  7 -> 8 [color="green", label="$stack23", style=dashed];
+  8 -> 9 [color="green", label="a#1", style=dashed];
+  9 -> 10 [color="green", label="$stack20", style=dashed];
+  10 -> 16 [color="green", label="e#2", style=dashed];
+}

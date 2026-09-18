@@ -1,0 +1,19 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: b#0 = this.<benchmark.nestedlambda.capturedthenchain._03_captured_then_suspend_chainKt$capturedThenChain$1: java.lang.String $secret> (line 28)", fillcolor="white", style="filled"];
+  1 [label="1: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(b#0) (line 28)", fillcolor="white", style="filled"];
+  2 [label="2: $stack12 = (kotlin.coroutines.Continuation) this (line 28)", fillcolor="white", style="filled"];
+  3 [label="3: $stack13 = staticinvoke <benchmark.nestedlambda.capturedthenchain._03_captured_then_suspend_chainKt: java.lang.Object identity(java.lang.String,kotlin.coroutines.Continuation)>(b#0, $stack12) (line 28)", fillcolor="white", style="filled"];
+  4 [label="4: a#0 = (java.lang.String) $stack13 (line 27)", fillcolor="white", style="filled"];
+  5 [label="5: $stack10 = (kotlin.coroutines.Continuation) this (line 29)", fillcolor="white", style="filled"];
+  6 [label="6: $stack11 = staticinvoke <benchmark.nestedlambda.capturedthenchain._03_captured_then_suspend_chainKt: java.lang.Object identity(java.lang.String,kotlin.coroutines.Continuation)>(a#0, $stack10) (line 29)", fillcolor="white", style="filled"];
+  7 [label="7: b#1 = (java.lang.String) $stack11 (line 27)", fillcolor="white", style="filled"];
+  8 [label="8: $stack7 = <java.lang.System: java.io.PrintStream out> (line 30)", fillcolor="white", style="filled"];
+  9 [label="9: virtualinvoke $stack7.<java.io.PrintStream: void println(java.lang.Object)>(b#1) (line 30)", fillcolor="#FFAA00", style="filled"];
+  10 [label="10: $stack8 = <kotlin.Unit: kotlin.Unit INSTANCE> (line 31)", fillcolor="white", style="filled"];
+  11 [label="11: return $stack8 (line 31)", fillcolor="white", style="filled"];
+
+}

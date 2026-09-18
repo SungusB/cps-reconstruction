@@ -1,0 +1,27 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 30)", fillcolor="#FF6666", style="filled"];
+  1 [label="1: channel = staticinvoke <kotlinx.coroutines.channels.ChannelKt: kotlinx.coroutines.channels.Channel Channel$default(int,kotlinx.coroutines.channels.BufferOverflow,kotlin.jvm.functions.Function1,int,java.lang.Object)>(1, null, null, 6, null) (line 31)", fillcolor="white", style="filled"];
+  2 [label="2: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(secret) (line 32)", fillcolor="white", style="filled"];
+  3 [label="3: #l12 = (kotlin.coroutines.Continuation) $continuation (line 32)", fillcolor="white", style="filled"];
+  4 [label="4: $stack28 = interfaceinvoke channel.<kotlinx.coroutines.channels.Channel: java.lang.Object send(java.lang.Object,kotlin.coroutines.Continuation)>(secret, #l12) (line 32)", fillcolor="white", style="filled"];
+  5 [label="5: $stack26 = (kotlinx.coroutines.channels.SendChannel) channel (line 33)", fillcolor="white", style="filled"];
+  6 [label="6: staticinvoke <kotlinx.coroutines.channels.SendChannel$DefaultImpls: boolean close$default(kotlinx.coroutines.channels.SendChannel,java.lang.Throwable,int,java.lang.Object)>($stack26, null, 1, null) (line 33)", fillcolor="white", style="filled"];
+  7 [label="7: result = \"default\" (line 34)", fillcolor="white", style="filled"];
+  8 [label="8: l4 = interfaceinvoke channel.<kotlinx.coroutines.channels.Channel: kotlinx.coroutines.channels.ChannelIterator iterator()>() (line 35)", fillcolor="white", style="filled"];
+  9 [label="9: $stack19 = interfaceinvoke l4.<kotlinx.coroutines.channels.ChannelIterator: java.lang.Object next()>() (line 35)", fillcolor="white", style="filled"];
+  10 [label="10: result = (java.lang.String) $stack19 (line 36)", fillcolor="white", style="filled"];
+  11 [label="11: goto", fillcolor="white", style="filled"];
+  12 [label="12: $stack18 = <java.lang.System: java.io.PrintStream out> (line 38)", fillcolor="white", style="filled"];
+  13 [label="13: virtualinvoke $stack18.<java.io.PrintStream: void println(java.lang.Object)>(result) (line 38)", fillcolor="#FFAA00", style="filled"];
+  14 [label="14: return result (line 39)", fillcolor="white", style="filled"];
+  15 [label="15: #l5 = (kotlin.coroutines.Continuation) $continuation (line 36)", fillcolor="white", style="filled"];
+  16 [label="16: $stack22 = interfaceinvoke l4.<kotlinx.coroutines.channels.ChannelIterator: java.lang.Object hasNext(kotlin.coroutines.Continuation)>(#l5) (line 36)", fillcolor="white", style="filled"];
+  17 [label="17: $stack16 = (java.lang.Boolean) $stack22 (line 35)", fillcolor="white", style="filled"];
+  18 [label="18: $stack17 = virtualinvoke $stack16.<java.lang.Boolean: boolean booleanValue()>() (line 35)", fillcolor="white", style="filled"];
+  19 [label="19: if $stack17 == 0 (line 35)", fillcolor="white", style="filled"];
+
+}

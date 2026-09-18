@@ -1,0 +1,42 @@
+digraph CFG {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret#0 = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 34)"];
+  1 [label="1: $stack11 = staticinvoke <kotlinx.coroutines.Dispatchers: kotlinx.coroutines.CoroutineDispatcher getDefault()>() (line 35)"];
+  2 [label="2: $stack15 = (kotlin.coroutines.CoroutineContext) $stack11 (line 35)"];
+  3 [label="3: $stack12 = new benchmark.concurrency.withcontext._04_with_contextKt$withContextSwitch$result$1 (line 35)"];
+  4 [label="4: specialinvoke $stack12.<benchmark.concurrency.withcontext._04_with_contextKt$withContextSwitch$result$1: void <init>(java.lang.String,kotlin.coroutines.Continuation)>(secret#0, null) (line 35)"];
+  5 [label="5: $stack14 = (kotlin.jvm.functions.Function2) $stack12 (line 35)"];
+  6 [label="6: #l8 = (kotlin.coroutines.Continuation) $continuation (line 35)"];
+  7 [label="7: $stack16 = staticinvoke <kotlinx.coroutines.BuildersKt: java.lang.Object withContext(kotlin.coroutines.CoroutineContext,kotlin.jvm.functions.Function2,kotlin.coroutines.Continuation)>($stack15, $stack14, #l8) (line 35)"];
+  8 [label="8: result = (java.lang.String) $stack16 (line 33)"];
+  9 [label="9: $stack10 = <java.lang.System: java.io.PrintStream out> (line 38)"];
+  10 [label="10: virtualinvoke $stack10.<java.io.PrintStream: void println(java.lang.Object)>(result) (line 38)"];
+  11 [label="11: return result (line 39)"];
+
+  0 -> 1 [color="blue"];
+  1 -> 2 [color="blue"];
+  2 -> 3 [color="blue"];
+  3 -> 4 [color="blue"];
+  4 -> 5 [color="blue"];
+  5 -> 6 [color="blue"];
+  6 -> 7 [color="blue"];
+  7 -> 8 [color="blue"];
+  8 -> 9 [color="blue"];
+  9 -> 10 [color="blue"];
+  10 -> 11 [color="blue"];
+  1 -> 2 [color="green", label="$stack11", style=dashed];
+  3 -> 4 [color="green", label="$stack12", style=dashed];
+  0 -> 4 [color="green", label="secret#0", style=dashed];
+  3 -> 5 [color="green", label="$stack12", style=dashed];
+  6 -> 7 [color="green", label="#l8", style=dashed];
+  5 -> 7 [color="green", label="$stack14", style=dashed];
+  2 -> 7 [color="green", label="$stack15", style=dashed];
+  7 -> 8 [color="green", label="$stack16", style=dashed];
+  9 -> 10 [color="green", label="$stack10", style=dashed];
+  8 -> 10 [color="green", label="result", style=dashed];
+  8 -> 11 [color="green", label="result", style=dashed];
+  4 -> 5 [color="green", label="$stack12", style=dashed];
+}

@@ -1,0 +1,33 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 20)", fillcolor="#FF6666", style="filled"];
+  1 [label="1: result#0 = secret (line 21)", fillcolor="#FFFF99", style="filled"];
+  2 [label="2: i = 0 (line 22)", fillcolor="white", style="filled"];
+  3 [label="3: e#0 = result#0 (line 25)", fillcolor="white", style="filled"];
+  4 [label="4: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(result#0) (line 25)", fillcolor="white", style="filled"];
+  5 [label="5: $stack14 = <java.lang.System: java.io.PrintStream out> (line 31)", fillcolor="white", style="filled"];
+  6 [label="6: virtualinvoke $stack14.<java.io.PrintStream: void println(java.lang.Object)>(result#0) (line 31)", fillcolor="#FFAA00", style="filled"];
+  7 [label="7: e#2 = result#0 (line 32)", fillcolor="white", style="filled"];
+  8 [label="8: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(result#0) (line 32)", fillcolor="white", style="filled"];
+  9 [label="9: return result#0 (line 32)", fillcolor="white", style="filled"];
+  10 [label="10: $stack23 := @caughtexception", fillcolor="white", style="filled"];
+  11 [label="11: e#1 = $stack23 (line 26)", fillcolor="white", style="filled"];
+  12 [label="12: result#0 = \"error\" (line 27)", fillcolor="white", style="filled"];
+  13 [label="13: #l3 = (kotlin.coroutines.Continuation) $continuation (line 25)", fillcolor="white", style="filled"];
+  14 [label="14: $stack17 = staticinvoke <benchmark.trycatch.nestedinloop._05_try_catch_in_loopKt: java.lang.Object identity(java.lang.String,kotlin.coroutines.Continuation)>(result#0, #l3) (line 25)", fillcolor="#FFFF99", style="filled"];
+  15 [label="15: result#0 = (java.lang.String) $stack17 (line 25)", fillcolor="#FFFF99", style="filled"];
+  16 [label="16: if i >= count (line 23)", fillcolor="white", style="filled"];
+  17 [label="17: goto", fillcolor="white", style="filled"];
+  18 [label="18: i = i + 1 (line 29)", fillcolor="white", style="filled"];
+  19 [label="19: goto", fillcolor="white", style="filled"];
+
+  0 -> 1 [color="green", label="secret", style=dashed];
+  1 -> 6 [color="green", label="result#0", style=dashed];
+  15 -> 6 [color="green", label="result#0", style=dashed];
+  1 -> 14 [color="green", label="result#0", style=dashed];
+  15 -> 14 [color="green", label="result#0", style=dashed];
+  14 -> 15 [color="green", label="$stack17", style=dashed];
+}

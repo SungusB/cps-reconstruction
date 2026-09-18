@@ -1,0 +1,29 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 13)", fillcolor="#FF6666", style="filled"];
+  1 [label="1: result#0 = secret (line 14)", fillcolor="#FFFF99", style="filled"];
+  2 [label="2: i#0 = 0 (line 15)", fillcolor="white", style="filled"];
+  3 [label="3: l5 = result#0 (line 16)", fillcolor="white", style="filled"];
+  4 [label="4: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(result#0) (line 16)", fillcolor="white", style="filled"];
+  5 [label="5: #l14 = (kotlin.coroutines.Continuation) $continuation (line 16)", fillcolor="white", style="filled"];
+  6 [label="6: $stack17 = staticinvoke <benchmark.loops.forloop._02_for_loopKt: java.lang.Object identity(java.lang.String,kotlin.coroutines.Continuation)>(result#0, #l14) (line 16)", fillcolor="#FFFF99", style="filled"];
+  7 [label="7: result#0 = (java.lang.String) $stack17 (line 12)", fillcolor="#FFFF99", style="filled"];
+  8 [label="8: i#0 = i#0 + 1 (line 15)", fillcolor="white", style="filled"];
+  9 [label="9: goto", fillcolor="white", style="filled"];
+  10 [label="10: $stack14 = <java.lang.System: java.io.PrintStream out> (line 18)", fillcolor="white", style="filled"];
+  11 [label="11: virtualinvoke $stack14.<java.io.PrintStream: void println(java.lang.Object)>(result#0) (line 18)", fillcolor="#FFAA00", style="filled"];
+  12 [label="12: i#1 = result#0 (line 19)", fillcolor="white", style="filled"];
+  13 [label="13: staticinvoke <kotlin.jvm.internal.Intrinsics: void checkNotNull(java.lang.Object)>(result#0) (line 19)", fillcolor="white", style="filled"];
+  14 [label="14: return result#0 (line 19)", fillcolor="white", style="filled"];
+  15 [label="15: if i#0 >= count (line 15)", fillcolor="white", style="filled"];
+
+  0 -> 1 [color="green", label="secret", style=dashed];
+  1 -> 6 [color="green", label="result#0", style=dashed];
+  7 -> 6 [color="green", label="result#0", style=dashed];
+  6 -> 7 [color="green", label="$stack17", style=dashed];
+  1 -> 11 [color="green", label="result#0", style=dashed];
+  7 -> 11 [color="green", label="result#0", style=dashed];
+}

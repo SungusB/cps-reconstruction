@@ -1,0 +1,13 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 26)", fillcolor="#FF6666", style="filled"];
+  1 [label="1: $stack1 = new benchmark.nestedlambda.capturedthenchain._03_captured_then_suspend_chainKt$capturedThenChain$1 (line 27)", fillcolor="white", style="filled"];
+  2 [label="2: specialinvoke $stack1.<benchmark.nestedlambda.capturedthenchain._03_captured_then_suspend_chainKt$capturedThenChain$1: void <init>(java.lang.String,kotlin.coroutines.Continuation)>(secret, null) (line 27)", fillcolor="white", style="filled"];
+  3 [label="3: $stack2 = (kotlin.jvm.functions.Function1) $stack1 (line 27)", fillcolor="white", style="filled"];
+  4 [label="4: staticinvoke <benchmark.nestedlambda.capturedthenchain._03_captured_then_suspend_chainKt: void runSuspend(kotlin.jvm.functions.Function1)>($stack2) (line 27)", fillcolor="white", style="filled"];
+  5 [label="5: return (line 32)", fillcolor="white", style="filled"];
+
+}

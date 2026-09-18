@@ -269,7 +269,7 @@ imprecision tradeoff cited in §2) populated directly from
 it as an orange dashed edge labeled with the exception type name, alongside
 the existing blue/CFG, green/DDG, dotted-red/CDG edges.
 
-This is what makes `docs/exception-handling/dot/with-reconstruction/_01_suspend_in_tryKt_suspendInTry.dot`
+This is what makes `docs/dot/try-catch/with-reconstruction/_01_suspend_in_tryKt_suspendInTry.dot`
 (§6) show the preserved trap explicitly: three orange edges, one per
 non-bookkeeping statement inside the original protected range
 (`checkNotNull(secret)`, the suspend call itself, and the checkcast/assign
@@ -394,12 +394,15 @@ evaluation.
 
 ## 8. `.dot` files
 
-`docs/exception-handling/dot/` holds the actual Graphviz output from the run
-in §7, committed rather than left as a regenerate-only build artifact, since
-they're small and are direct evidence for the numbers above:
+The Graphviz output for this category lives in `docs/dot/try-catch/` (see
+`docs/dot/README.md`), alongside every other benchmark category — it used to
+be kept here, under `docs/exception-handling/dot/`, but that copy only
+covered `01`–`03` and predated the `TaintSlicer` CDG fix (its `_slice.dot`
+chops were the inflated ones), so it was regenerated and moved rather than
+patched:
 
 ```
-dot/
+docs/dot/try-catch/
   with-reconstruction/
     _01_suspend_in_tryKt_suspendInTry.dot            CFG+DDG+CDG+exceptional edges, reconstructed body
     _01_suspend_in_tryKt_suspendInTry_slice.dot       taint slice highlighted on the same body
@@ -407,14 +410,17 @@ dot/
     _02_suspend_in_finallyKt_suspendInFinally_slice.dot
     _03_suspend_after_catchKt_suspendAfterCatch.dot
     _03_suspend_after_catchKt_suspendAfterCatch_slice.dot
+    _04_multiple_independent_try_catchKt_multipleTryCatchBlocks{,_slice}.dot
+    _05_try_catch_in_loopKt_tryCatchInLoop{,_slice}.dot
+    _06_multiple_catch_clausesKt_multipleCatchClauses{,_slice}.dot
   without-reconstruction/
-    (same six files, raw un-reconstructed bodies — same names, same command with --no-reconstruct)
+    (same twelve files, raw un-reconstructed bodies — same names, same command with --no-reconstruct)
 ```
 
 Open any `.dot` file with a Graphviz viewer (`dot -Tsvg <file> -o out.svg`,
 or any online/editor Graphviz preview) to render it. To regenerate from
-scratch: `bash scripts/run_ablation.sh benchmark/try-catch`, then look under
-`build/ablation/{with,without}-reconstruction/{cfg,slices}/`.
+scratch: `bash scripts/run_ablation.sh && bash scripts/collect_dots.sh`
+(the raw output is under `build/ablation/{with,without}-reconstruction/{cfg,slices}/`).
 
 The single most legible comparison for the paper is
 `with-reconstruction/_01_suspend_in_tryKt_suspendInTry.dot` (13 nodes, reads

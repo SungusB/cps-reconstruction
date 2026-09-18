@@ -1,0 +1,19 @@
+digraph CFG {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: $stack3 = this.<benchmark.nestedlambda.capturetosink._01_closure_capture_to_sinkKt$closureCaptureToSink$1: java.lang.String $secret> (line 31)"];
+  1 [label="1: $stack4 = <java.lang.System: java.io.PrintStream out> (line 31)"];
+  2 [label="2: virtualinvoke $stack4.<java.io.PrintStream: void println(java.lang.Object)>($stack3) (line 31)"];
+  3 [label="3: $stack5 = <kotlin.Unit: kotlin.Unit INSTANCE> (line 32)"];
+  4 [label="4: return $stack5 (line 32)"];
+
+  0 -> 1 [color="blue"];
+  1 -> 2 [color="blue"];
+  2 -> 3 [color="blue"];
+  3 -> 4 [color="blue"];
+  1 -> 2 [color="green", label="$stack4", style=dashed];
+  0 -> 2 [color="green", label="$stack3", style=dashed];
+  3 -> 4 [color="green", label="$stack5", style=dashed];
+}

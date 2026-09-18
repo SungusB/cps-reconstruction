@@ -1,0 +1,22 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: this := @this: benchmark.nestedlambda.nocapture._02_no_captureKt$noCapture$1 (line 24)", fillcolor="white", style="filled"];
+  1 [label="1: $result := @parameter0: java.lang.Object (line 24)", fillcolor="white", style="filled"];
+  2 [label="2: staticinvoke <kotlin.coroutines.intrinsics.IntrinsicsKt: java.lang.Object getCOROUTINE_SUSPENDED()>()", fillcolor="white", style="filled"];
+  3 [label="3: $stack2 = this.<benchmark.nestedlambda.nocapture._02_no_captureKt$noCapture$1: int label> (line 24)", fillcolor="white", style="filled"];
+  4 [label="4: switch($stack2) {     case 0:     default:  } (line 24)", fillcolor="white", style="filled"];
+  5 [label="5: staticinvoke <kotlin.ResultKt: void throwOnFailure(java.lang.Object)>($result) (line 24)", fillcolor="white", style="filled"];
+  6 [label="6: $stack3 = <java.lang.System: java.io.PrintStream out> (line 25)", fillcolor="white", style="filled"];
+  7 [label="7: virtualinvoke $stack3.<java.io.PrintStream: void println(java.lang.Object)>(\"constant, not tainted\") (line 25)", fillcolor="#FFAA00", style="filled"];
+  8 [label="8: $stack4 = <kotlin.Unit: kotlin.Unit INSTANCE> (line 26)", fillcolor="white", style="filled"];
+  9 [label="9: return $stack4 (line 26)", fillcolor="white", style="filled"];
+  10 [label="10: $stack5 = new java.lang.IllegalStateException (line 24)", fillcolor="white", style="filled"];
+  11 [label="11: #l0 = (java.lang.IllegalStateException) $stack5 (line 24)", fillcolor="white", style="filled"];
+  12 [label="12: specialinvoke #l0.<java.lang.IllegalStateException: void <init>(java.lang.String)>(\"call to \\'resume\\' before \\'invoke\\' with coroutine\") (line 24)", fillcolor="white", style="filled"];
+  13 [label="13: #l1 = (java.lang.Throwable) $stack5 (line 24)", fillcolor="white", style="filled"];
+  14 [label="14: throw #l1 (line 24)", fillcolor="white", style="filled"];
+
+}

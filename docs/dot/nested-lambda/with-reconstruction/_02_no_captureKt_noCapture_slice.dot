@@ -1,0 +1,25 @@
+digraph Slice {
+  rankdir=TB;
+  node [shape=box, fontname="Monospace", fontsize=9];
+  edge [fontname="Arial", fontsize=8];
+
+  0 [label="0: secret = staticinvoke <java.lang.System: java.lang.String getenv(java.lang.String)>(\"SECRET\") (line 22)", fillcolor="#FF6666", style="filled"];
+  1 [label="1: if secret == null (line 23)", fillcolor="white", style="filled"];
+  2 [label="2: $stack6 = 1 (line 23)", fillcolor="white", style="filled"];
+  3 [label="3: goto (line 23)", fillcolor="white", style="filled"];
+  4 [label="4: $stack6 = 0 (line 23)", fillcolor="white", style="filled"];
+  5 [label="5: if $stack6 != 0 (line 23)", fillcolor="white", style="filled"];
+  6 [label="6: l1 = \"Check failed.\" (line 23)", fillcolor="white", style="filled"];
+  7 [label="7: $stack5 = new java.lang.IllegalStateException (line 23)", fillcolor="white", style="filled"];
+  8 [label="8: $stack4 = virtualinvoke l1.<java.lang.Object: java.lang.String toString()>() (line 23)", fillcolor="white", style="filled"];
+  9 [label="9: #l0 = (java.lang.IllegalStateException) $stack5 (line 23)", fillcolor="white", style="filled"];
+  10 [label="10: specialinvoke #l0.<java.lang.IllegalStateException: void <init>(java.lang.String)>($stack4) (line 23)", fillcolor="white", style="filled"];
+  11 [label="11: #l1 = (java.lang.Throwable) $stack5 (line 23)", fillcolor="white", style="filled"];
+  12 [label="12: throw #l1 (line 23)", fillcolor="white", style="filled"];
+  13 [label="13: $stack2 = new benchmark.nestedlambda.nocapture._02_no_captureKt$noCapture$1 (line 24)", fillcolor="white", style="filled"];
+  14 [label="14: specialinvoke $stack2.<benchmark.nestedlambda.nocapture._02_no_captureKt$noCapture$1: void <init>(kotlin.coroutines.Continuation)>(null) (line 24)", fillcolor="white", style="filled"];
+  15 [label="15: $stack3 = (kotlin.jvm.functions.Function1) $stack2 (line 24)", fillcolor="white", style="filled"];
+  16 [label="16: staticinvoke <benchmark.nestedlambda.nocapture._02_no_captureKt: void runSuspend(kotlin.jvm.functions.Function1)>($stack3) (line 24)", fillcolor="white", style="filled"];
+  17 [label="17: return (line 27)", fillcolor="white", style="filled"];
+
+}
