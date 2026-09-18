@@ -261,7 +261,11 @@ itself takes ~15 s either way).
 
 The harness additionally writes the reconstructed bodies out as `.class`
 files (`--emit-classes`, via Soot's ASM backend), which is the input any
-other bytecode-consuming tool (CodeQL is next) needs. Two things it does
+other bytecode-consuming tool (FindSecBugs, Joern, Doop) needs. CodeQL is
+not such a tool — its Java/Kotlin extractor works from source — so the
+relevant CodeQL experiment is the opposite one: on the Kotlin *source* it
+should show no spill-slot false positive, which would place the imprecision
+squarely in bytecode-level analysis. Two things it does
 *not* show: `benchmark/concurrency/*` and `benchmark/flow/*` are 0/0 in both
 modes because `kotlinx.coroutines` is kept out of the Soot scene, so
 `async`/`await`/channels are opaque to FlowDroid regardless of
@@ -306,8 +310,9 @@ What is not established, in the order it matters:
    every edge backed by an original path — would replace the hand-checking
    and has not been written.
 3. **A second external tool.** Only FlowDroid has been run. The
-   reconstructed `.class` files needed for CodeQL are emitted but no CodeQL
-   comparison exists yet.
+   reconstructed `.class` files a second bytecode-level tool needs
+   (FindSecBugs, Joern, Doop) are emitted, but no such comparison exists
+   yet, and it has not been checked that the emitted classes verify.
 4. **Cost.** No defensible wall-time result: the harness's per-package
    timings are dominated by scene setup on small inputs and by FlowDroid's
    path-builder timeout (identical in both modes) on large ones. Edge

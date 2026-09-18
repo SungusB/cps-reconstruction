@@ -41,7 +41,9 @@
 //       invocation reaches the case-2 reload through the dispatch switch on
 //       the next; `baseline --no-invokesuspend-entry` removes the false
 //       positive on raw bytecode, confirming it needs the resumption path.
-//       CodeQL on the emitted `.class` files is still to be run.
+//       A second bytecode-level tool (FindSecBugs / Joern / Doop — not
+//       CodeQL, which analyzes source) on the emitted `.class` files is
+//       still to be run.
 package benchmark.spillslot.runblockscopes
 
 suspend fun tick(): Int = 1
