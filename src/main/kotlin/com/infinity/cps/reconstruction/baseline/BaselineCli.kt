@@ -55,12 +55,22 @@ fun main(args: Array<String>) {
     var reconstruct = true
     var emitClasses = false
     var skipInvokeSuspendEntries = false
+    var normalize = false
     var i = 0
     while (i < args.size) {
         when (args[i]) {
             "--no-reconstruct" -> reconstruct = false
             "--emit-classes" -> emitClasses = true
             "--no-invokesuspend-entry" -> skipInvokeSuspendEntries = true
+            // Diagnostic: run the parts of Soot's `jb` pack that bodies loaded
+            // from bytecode get but the port's in-memory reconstructed bodies
+            // skip — trap tightening, copy propagation, dead-assignment
+            // elimination. Tests two defects with that suspected common cause
+            // (docs/bugs-found/README.md B19, A12): flows FlowDroid loses through
+            // local copies (benchmark-gen random/094, 098), and an emitted
+            // class whose trap starts before a local its handler reads is
+            // assigned (randomexc/121, VerifyError).
+            "--normalize" -> normalize = true
             "--lib" -> libPath = args[++i]
             else -> positional.add(args[i])
         }
@@ -100,6 +110,14 @@ fun main(args: Array<String>) {
                 println("    ${r.method.signature}: ${r.originalStatements} -> ${r.realStatements} real (${r.bodyStatements} emitted)")
             }
             for ((m, reason) in reconstructor.declined) println("    declined ${m.signature}: $reason")
+            if (normalize) {
+                for (r in reconstructor.reconstructed) {
+                    soot.toolkits.exceptions.TrapTightener.v().transform(r.method.activeBody)
+                    soot.jimple.toolkits.scalar.CopyPropagator.v().transform(r.method.activeBody)
+                    soot.jimple.toolkits.scalar.DeadAssignmentEliminator.v().transform(r.method.activeBody)
+                }
+                dumpBodies(reconstructor.reconstructed.map { it.method }, File(outputDir, "jimple/normalized"))
+            }
             reconstructed.addAll(reconstructor.reconstructed)
             reconstructor.declined.forEach { (m, reason) -> declined[m.signature] = reason }
         }
@@ -110,6 +128,13 @@ fun main(args: Array<String>) {
             // not to; FlowDroid's callgraph builder then fails with "No
             // method source set" on the very next retrieveActiveBody().
             Options.v().set_no_writeout_body_releasing(true)
+            // Emit a LocalVariableTable (names kept by jb use-original-names
+            // in initSoot). Without it, a consumer re-reading these classes
+            // sees synthetic l0/l1/... names; Joern's jimple2cpg then binds
+            // a constructor's receiver as `l0` while naming parameter 0
+            // `this`, and loses every flow through a lambda's captured
+            // field (concurrency/* went TP -> FN on reconstructed classes).
+            Options.v().set_write_local_annotations(true)
             Options.v().set_output_format(Options.output_format_class)
             Options.v().set_output_dir(classOut.absolutePath)
             PackManager.v().writeOutput()
@@ -131,7 +156,7 @@ fun main(args: Array<String>) {
         val run = runFlowDroid(pkg, classesDir, libPath, entryPoints)
         packageRuns.add(run)
         flows.addAll(run.flows)
-        println("[*] [$pkg] ${run.flows.size} flow(s), ${run.wallMs}ms, ${run.callgraphEdges} cg edges, ${run.ifdsEdges} IFDS edges")
+        println("[*] [$pkg] ${run.flows.size} flow(s), ${run.wallMs}ms, ${run.callgraphEdges} cg edges, ${run.ifdsEdges} IFDS edges, termination ${run.terminationState}")
         for (f in run.flows) println("    ${f.describe()}")
     }
 
@@ -154,6 +179,12 @@ private class PackageRun(
     val wallMs: Long,
     val callgraphEdges: Int,
     val ifdsEdges: Long,
+    // InfoflowResults.getTerminationState(): 0 = completed; 1/2 = data-flow
+    // solve stopped by timeout/low memory (flows are partial); 4/8 = only path
+    // reconstruction stopped. FlowDroid reports results either way, so a
+    // memory-stopped solve looks like a finished one unless this is recorded
+    // (12 raw generated-suite packages hit the 6 GB memory watcher).
+    val terminationState: Int,
 )
 
 private fun runFlowDroid(pkg: String, classesDir: String, libPath: String, entryPoints: List<String>): PackageRun {
@@ -191,7 +222,7 @@ private fun runFlowDroid(pkg: String, classesDir: String, libPath: String, entry
         )
     }
     val cgEdges = if (Scene.v().hasCallGraph()) Scene.v().callGraph.size() else -1
-    return PackageRun(pkg, flows, wallMs, cgEdges, perf?.edgePropagationCount ?: -1)
+    return PackageRun(pkg, flows, wallMs, cgEdges, perf?.edgePropagationCount ?: -1, results.terminationState)
 }
 
 private fun isStateMachineShaped(m: SootMethod): Boolean =
@@ -233,6 +264,9 @@ private fun initSoot(classesDir: String, libPath: String, extraExcludes: List<St
     o.set_exclude(listOf("java.*", "javax.*", "jdk.*", "sun.*", "com.sun.*", "kotlinx.coroutines.*", "kotlin.*") + extraExcludes)
     o.set_include(listOf("kotlin.coroutines.*", "kotlin.jvm.internal.*", "kotlin.ResultKt", "kotlin.Result"))
     o.setPhaseOption("jb.ulp", "off")
+    // Keep kotlinc's local names (this, secret, $result, ...) so emitted
+    // classes can carry a meaningful LocalVariableTable; names only.
+    o.setPhaseOption("jb", "use-original-names:true")
     o.setPhaseOption("cg", "trim-clinit:false")
     Scene.v().loadNecessaryClasses()
 }
@@ -321,7 +355,8 @@ private fun writeSummary(
         for ((i, r) in packageRuns.withIndex()) {
             val comma = if (i < packageRuns.size - 1) "," else ""
             sw.println("    {\"package\": \"${JsonUtil.escape(r.pkg)}\", \"flows\": ${r.flows.size}, " +
-                "\"wallMs\": ${r.wallMs}, \"callgraphEdges\": ${r.callgraphEdges}, \"ifdsEdges\": ${r.ifdsEdges}}$comma")
+                "\"wallMs\": ${r.wallMs}, \"callgraphEdges\": ${r.callgraphEdges}, \"ifdsEdges\": ${r.ifdsEdges}, " +
+                "\"terminationState\": ${r.terminationState}}$comma")
         }
         sw.println("  ],")
         sw.println("  \"methodStats\": [")

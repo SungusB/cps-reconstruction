@@ -1,0 +1,3757 @@
+[
+ {
+  "id": "001",
+  "family": "chain",
+  "name": "chain_n1",
+  "expect": "FLOW",
+  "note": "1 suspend hops carry the source to the sink",
+  "size": "n=1",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 5,
+  "suspensions": 2,
+  "depth": 0,
+  "fns": [
+   "identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c001",
+  "files": {
+   "kotlin": "kotlin/chain/001_chain_n1.kt",
+   "rust": "rust/chain/001_chain_n1.rs",
+   "cpp": "cpp/chain/001_chain_n1.cpp"
+  }
+ },
+ {
+  "id": "002",
+  "family": "chain",
+  "name": "chain_n2",
+  "expect": "FLOW",
+  "note": "2 suspend hops carry the source to the sink",
+  "size": "n=2",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 7,
+  "suspensions": 4,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c002",
+  "files": {
+   "kotlin": "kotlin/chain/002_chain_n2.kt",
+   "rust": "rust/chain/002_chain_n2.rs",
+   "cpp": "cpp/chain/002_chain_n2.cpp"
+  }
+ },
+ {
+  "id": "003",
+  "family": "chain",
+  "name": "chain_n3",
+  "expect": "FLOW",
+  "note": "3 suspend hops carry the source to the sink",
+  "size": "n=3",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 6,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c003",
+  "files": {
+   "kotlin": "kotlin/chain/003_chain_n3.kt",
+   "rust": "rust/chain/003_chain_n3.rs",
+   "cpp": "cpp/chain/003_chain_n3.cpp"
+  }
+ },
+ {
+  "id": "004",
+  "family": "chain",
+  "name": "chain_n4",
+  "expect": "FLOW",
+  "note": "4 suspend hops carry the source to the sink",
+  "size": "n=4",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 11,
+  "suspensions": 8,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c004",
+  "files": {
+   "kotlin": "kotlin/chain/004_chain_n4.kt",
+   "rust": "rust/chain/004_chain_n4.rs",
+   "cpp": "cpp/chain/004_chain_n4.cpp"
+  }
+ },
+ {
+  "id": "005",
+  "family": "chain",
+  "name": "chain_n6",
+  "expect": "FLOW",
+  "note": "6 suspend hops carry the source to the sink",
+  "size": "n=6",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 15,
+  "suspensions": 12,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c005",
+  "files": {
+   "kotlin": "kotlin/chain/005_chain_n6.kt",
+   "rust": "rust/chain/005_chain_n6.rs",
+   "cpp": "cpp/chain/005_chain_n6.cpp"
+  }
+ },
+ {
+  "id": "006",
+  "family": "chain",
+  "name": "chain_n8",
+  "expect": "FLOW",
+  "note": "8 suspend hops carry the source to the sink",
+  "size": "n=8",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 19,
+  "suspensions": 16,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c006",
+  "files": {
+   "kotlin": "kotlin/chain/006_chain_n8.kt",
+   "rust": "rust/chain/006_chain_n8.rs",
+   "cpp": "cpp/chain/006_chain_n8.cpp"
+  }
+ },
+ {
+  "id": "007",
+  "family": "chain",
+  "name": "chain_n12",
+  "expect": "FLOW",
+  "note": "12 suspend hops carry the source to the sink",
+  "size": "n=12",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 27,
+  "suspensions": 24,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c007",
+  "files": {
+   "kotlin": "kotlin/chain/007_chain_n12.kt",
+   "rust": "rust/chain/007_chain_n12.rs",
+   "cpp": "cpp/chain/007_chain_n12.cpp"
+  }
+ },
+ {
+  "id": "008",
+  "family": "chain",
+  "name": "chain_n16",
+  "expect": "FLOW",
+  "note": "16 suspend hops carry the source to the sink",
+  "size": "n=16",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 35,
+  "suspensions": 32,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c008",
+  "files": {
+   "kotlin": "kotlin/chain/008_chain_n16.kt",
+   "rust": "rust/chain/008_chain_n16.rs",
+   "cpp": "cpp/chain/008_chain_n16.cpp"
+  }
+ },
+ {
+  "id": "009",
+  "family": "chain",
+  "name": "chain_n24",
+  "expect": "FLOW",
+  "note": "24 suspend hops carry the source to the sink",
+  "size": "n=24",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 51,
+  "suspensions": 48,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c009",
+  "files": {
+   "kotlin": "kotlin/chain/009_chain_n24.kt",
+   "rust": "rust/chain/009_chain_n24.rs",
+   "cpp": "cpp/chain/009_chain_n24.cpp"
+  }
+ },
+ {
+  "id": "010",
+  "family": "chain",
+  "name": "chain_n32",
+  "expect": "FLOW",
+  "note": "32 suspend hops carry the source to the sink",
+  "size": "n=32",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 67,
+  "suspensions": 64,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c010",
+  "files": {
+   "kotlin": "kotlin/chain/010_chain_n32.kt",
+   "rust": "rust/chain/010_chain_n32.rs",
+   "cpp": "cpp/chain/010_chain_n32.cpp"
+  }
+ },
+ {
+  "id": "011",
+  "family": "chain",
+  "name": "chain_n48",
+  "expect": "FLOW",
+  "note": "48 suspend hops carry the source to the sink",
+  "size": "n=48",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 99,
+  "suspensions": 96,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c011",
+  "files": {
+   "kotlin": "kotlin/chain/011_chain_n48.kt",
+   "rust": "rust/chain/011_chain_n48.rs",
+   "cpp": "cpp/chain/011_chain_n48.cpp"
+  }
+ },
+ {
+  "id": "012",
+  "family": "chain",
+  "name": "chain_n64",
+  "expect": "FLOW",
+  "note": "64 suspend hops carry the source to the sink",
+  "size": "n=64",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 131,
+  "suspensions": 128,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chain.c012",
+  "files": {
+   "kotlin": "kotlin/chain/012_chain_n64.kt",
+   "rust": "rust/chain/012_chain_n64.rs",
+   "cpp": "cpp/chain/012_chain_n64.cpp"
+  }
+ },
+ {
+  "id": "013",
+  "family": "chainkill",
+  "name": "chainkill_n1",
+  "expect": "NO-FLOW",
+  "note": "1 hops, then the sink's variable is overwritten after its last suspension; `a` stays tainted",
+  "size": "n=1",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 4,
+  "depth": 0,
+  "fns": [
+   "identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chainkill.c013",
+  "files": {
+   "kotlin": "kotlin/chainkill/013_chainkill_n1.kt",
+   "rust": "rust/chainkill/013_chainkill_n1.rs",
+   "cpp": "cpp/chainkill/013_chainkill_n1.cpp"
+  }
+ },
+ {
+  "id": "014",
+  "family": "chainkill",
+  "name": "chainkill_n4",
+  "expect": "NO-FLOW",
+  "note": "4 hops, then the sink's variable is overwritten after its last suspension; `a` stays tainted",
+  "size": "n=4",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 15,
+  "suspensions": 10,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chainkill.c014",
+  "files": {
+   "kotlin": "kotlin/chainkill/014_chainkill_n4.kt",
+   "rust": "rust/chainkill/014_chainkill_n4.rs",
+   "cpp": "cpp/chainkill/014_chainkill_n4.cpp"
+  }
+ },
+ {
+  "id": "015",
+  "family": "chainkill",
+  "name": "chainkill_n16",
+  "expect": "NO-FLOW",
+  "note": "16 hops, then the sink's variable is overwritten after its last suspension; `a` stays tainted",
+  "size": "n=16",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 39,
+  "suspensions": 34,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chainkill.c015",
+  "files": {
+   "kotlin": "kotlin/chainkill/015_chainkill_n16.kt",
+   "rust": "rust/chainkill/015_chainkill_n16.rs",
+   "cpp": "cpp/chainkill/015_chainkill_n16.cpp"
+  }
+ },
+ {
+  "id": "016",
+  "family": "chainkill",
+  "name": "chainkill_n64",
+  "expect": "NO-FLOW",
+  "note": "64 hops, then the sink's variable is overwritten after its last suspension; `a` stays tainted",
+  "size": "n=64",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 135,
+  "suspensions": 130,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.chainkill.c016",
+  "files": {
+   "kotlin": "kotlin/chainkill/016_chainkill_n64.kt",
+   "rust": "rust/chainkill/016_chainkill_n64.rs",
+   "cpp": "cpp/chainkill/016_chainkill_n64.cpp"
+  }
+ },
+ {
+  "id": "017",
+  "family": "branch",
+  "name": "then_only",
+  "expect": "FLOW",
+  "note": "suspend call only in the then-branch",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 5,
+  "suspensions": 1,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "if"
+  ],
+  "kt_package": "benchmarkgen.branch.c017",
+  "files": {
+   "kotlin": "kotlin/branch/017_then_only.kt",
+   "rust": "rust/branch/017_then_only.rs",
+   "cpp": "cpp/branch/017_then_only.cpp"
+  }
+ },
+ {
+  "id": "018",
+  "family": "branch",
+  "name": "both_branches",
+  "expect": "FLOW",
+  "note": "different suspend helpers in both branches",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 6,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity",
+   "other_identity"
+  ],
+  "features": [
+   "if"
+  ],
+  "kt_package": "benchmarkgen.branch.c018",
+  "files": {
+   "kotlin": "kotlin/branch/018_both_branches.kt",
+   "rust": "rust/branch/018_both_branches.rs",
+   "cpp": "cpp/branch/018_both_branches.cpp"
+  }
+ },
+ {
+  "id": "019",
+  "family": "branch",
+  "name": "kill_one_branch",
+  "expect": "FLOW",
+  "note": "taint survives the branch that does not overwrite",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 8,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "if"
+  ],
+  "kt_package": "benchmarkgen.branch.c019",
+  "files": {
+   "kotlin": "kotlin/branch/019_kill_one_branch.kt",
+   "rust": "rust/branch/019_kill_one_branch.rs",
+   "cpp": "cpp/branch/019_kill_one_branch.cpp"
+  }
+ },
+ {
+  "id": "020",
+  "family": "branch",
+  "name": "kill_both_branches",
+  "expect": "NO-FLOW",
+  "note": "both branches overwrite the sink's variable, around suspensions",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "if"
+  ],
+  "kt_package": "benchmarkgen.branch.c020",
+  "files": {
+   "kotlin": "kotlin/branch/020_kill_both_branches.kt",
+   "rust": "rust/branch/020_kill_both_branches.rs",
+   "cpp": "cpp/branch/020_kill_both_branches.cpp"
+  }
+ },
+ {
+  "id": "021",
+  "family": "branch",
+  "name": "sink_in_then",
+  "expect": "FLOW",
+  "note": "the sink sits inside a branch, its argument is a suspend call",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 5,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "if"
+  ],
+  "kt_package": "benchmarkgen.branch.c021",
+  "files": {
+   "kotlin": "kotlin/branch/021_sink_in_then.kt",
+   "rust": "rust/branch/021_sink_in_then.rs",
+   "cpp": "cpp/branch/021_sink_in_then.cpp"
+  }
+ },
+ {
+  "id": "022",
+  "family": "branch",
+  "name": "taint_else_sink_then",
+  "expect": "NO-FLOW",
+  "note": "taint is produced in the else-branch, the sink is in the then-branch",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 7,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "if"
+  ],
+  "kt_package": "benchmarkgen.branch.c022",
+  "files": {
+   "kotlin": "kotlin/branch/022_taint_else_sink_then.kt",
+   "rust": "rust/branch/022_taint_else_sink_then.rs",
+   "cpp": "cpp/branch/022_taint_else_sink_then.cpp"
+  }
+ },
+ {
+  "id": "023",
+  "family": "branch",
+  "name": "nested3_pass",
+  "expect": "FLOW",
+  "note": "three nested ifs, taint assigned at the innermost level",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 3,
+  "depth": 3,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "if"
+  ],
+  "kt_package": "benchmarkgen.branch.c023",
+  "files": {
+   "kotlin": "kotlin/branch/023_nested3_pass.kt",
+   "rust": "rust/branch/023_nested3_pass.rs",
+   "cpp": "cpp/branch/023_nested3_pass.cpp"
+  }
+ },
+ {
+  "id": "024",
+  "family": "branch",
+  "name": "nested3_kill_all",
+  "expect": "NO-FLOW",
+  "note": "every path through three nested ifs overwrites the sink's variable",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 12,
+  "suspensions": 4,
+  "depth": 2,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "if"
+  ],
+  "kt_package": "benchmarkgen.branch.c024",
+  "files": {
+   "kotlin": "kotlin/branch/024_nested3_kill_all.kt",
+   "rust": "rust/branch/024_nested3_kill_all.rs",
+   "cpp": "cpp/branch/024_nested3_kill_all.cpp"
+  }
+ },
+ {
+  "id": "025",
+  "family": "loop",
+  "name": "carried_1_while",
+  "expect": "FLOW",
+  "note": "loop-carried chain: the taint needs 1 iteration(s) of a while loop to reach the sink's variable",
+  "size": "k=1",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 6,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "while"
+  ],
+  "kt_package": "benchmarkgen.loop.c025",
+  "files": {
+   "kotlin": "kotlin/loop/025_carried_1_while.kt",
+   "rust": "rust/loop/025_carried_1_while.rs",
+   "cpp": "cpp/loop/025_carried_1_while.cpp"
+  }
+ },
+ {
+  "id": "026",
+  "family": "loop",
+  "name": "carried_2_while",
+  "expect": "FLOW",
+  "note": "loop-carried chain: the taint needs 2 iteration(s) of a while loop to reach the sink's variable",
+  "size": "k=2",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 4,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "while"
+  ],
+  "kt_package": "benchmarkgen.loop.c026",
+  "files": {
+   "kotlin": "kotlin/loop/026_carried_2_while.kt",
+   "rust": "rust/loop/026_carried_2_while.rs",
+   "cpp": "cpp/loop/026_carried_2_while.cpp"
+  }
+ },
+ {
+  "id": "027",
+  "family": "loop",
+  "name": "carried_3_for",
+  "expect": "FLOW",
+  "note": "loop-carried chain: the taint needs 3 iteration(s) of a for loop to reach the sink's variable",
+  "size": "k=3",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 12,
+  "suspensions": 6,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "for"
+  ],
+  "kt_package": "benchmarkgen.loop.c027",
+  "files": {
+   "kotlin": "kotlin/loop/027_carried_3_for.kt",
+   "rust": "rust/loop/027_carried_3_for.rs",
+   "cpp": "cpp/loop/027_carried_3_for.cpp"
+  }
+ },
+ {
+  "id": "028",
+  "family": "loop",
+  "name": "carried_4_do",
+  "expect": "FLOW",
+  "note": "loop-carried chain: the taint needs 4 iteration(s) of a do loop to reach the sink's variable",
+  "size": "k=4",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 15,
+  "suspensions": 8,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "do"
+  ],
+  "kt_package": "benchmarkgen.loop.c028",
+  "files": {
+   "kotlin": "kotlin/loop/028_carried_4_do.kt",
+   "rust": "rust/loop/028_carried_4_do.rs",
+   "cpp": "cpp/loop/028_carried_4_do.cpp"
+  }
+ },
+ {
+  "id": "029",
+  "family": "loop",
+  "name": "for_use_then_kill",
+  "expect": "FLOW",
+  "note": "first iteration copies the taint out, then the source variable is overwritten",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 7,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "for"
+  ],
+  "kt_package": "benchmarkgen.loop.c029",
+  "files": {
+   "kotlin": "kotlin/loop/029_for_use_then_kill.kt",
+   "rust": "rust/loop/029_for_use_then_kill.rs",
+   "cpp": "cpp/loop/029_for_use_then_kill.cpp"
+  }
+ },
+ {
+  "id": "030",
+  "family": "loop",
+  "name": "kill_at_iteration_end",
+  "expect": "NO-FLOW",
+  "note": "taint produced and overwritten inside every iteration; a copy stays tainted",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 8,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "while"
+  ],
+  "kt_package": "benchmarkgen.loop.c030",
+  "files": {
+   "kotlin": "kotlin/loop/030_kill_at_iteration_end.kt",
+   "rust": "rust/loop/030_kill_at_iteration_end.rs",
+   "cpp": "cpp/loop/030_kill_at_iteration_end.cpp"
+  }
+ },
+ {
+  "id": "031",
+  "family": "loop",
+  "name": "break_with_taint",
+  "expect": "FLOW",
+  "note": "break leaves the loop before the overwrite",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 8,
+  "suspensions": 2,
+  "depth": 2,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "break",
+   "if",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.loop.c031",
+  "files": {
+   "kotlin": "kotlin/loop/031_break_with_taint.kt",
+   "rust": "rust/loop/031_break_with_taint.rs",
+   "cpp": "cpp/loop/031_break_with_taint.cpp"
+  }
+ },
+ {
+  "id": "032",
+  "family": "loop",
+  "name": "continue_with_taint",
+  "expect": "FLOW",
+  "note": "continue skips the overwrite; the next iteration copies the taint",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 10,
+  "suspensions": 2,
+  "depth": 2,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "continue",
+   "if",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.loop.c032",
+  "files": {
+   "kotlin": "kotlin/loop/032_continue_with_taint.kt",
+   "rust": "rust/loop/032_continue_with_taint.rs",
+   "cpp": "cpp/loop/032_continue_with_taint.cpp"
+  }
+ },
+ {
+  "id": "033",
+  "family": "loop",
+  "name": "dowhile_kill",
+  "expect": "NO-FLOW",
+  "note": "do-while: the loop head only ever sees the overwritten value",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 10,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "do"
+  ],
+  "kt_package": "benchmarkgen.loop.c033",
+  "files": {
+   "kotlin": "kotlin/loop/033_dowhile_kill.kt",
+   "rust": "rust/loop/033_dowhile_kill.rs",
+   "cpp": "cpp/loop/033_dowhile_kill.cpp"
+  }
+ },
+ {
+  "id": "034",
+  "family": "loop",
+  "name": "nested_while_for",
+  "expect": "FLOW",
+  "note": "taint enters at the end of the outer body and is copied by the inner for loop on the next round",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 8,
+  "suspensions": 2,
+  "depth": 2,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "for",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.loop.c034",
+  "files": {
+   "kotlin": "kotlin/loop/034_nested_while_for.kt",
+   "rust": "rust/loop/034_nested_while_for.rs",
+   "cpp": "cpp/loop/034_nested_while_for.cpp"
+  }
+ },
+ {
+  "id": "035",
+  "family": "spillslot",
+  "name": "disjoint_scopes_2",
+  "expect": "NO-FLOW",
+  "note": "2 disjoint scopes, each saving one local across a suspension; the sink prints the last scope's constant",
+  "size": "k=2",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c035",
+  "files": {
+   "kotlin": "kotlin/spillslot/035_disjoint_scopes_2.kt",
+   "rust": "rust/spillslot/035_disjoint_scopes_2.rs",
+   "cpp": "cpp/spillslot/035_disjoint_scopes_2.cpp"
+  }
+ },
+ {
+  "id": "036",
+  "family": "spillslot",
+  "name": "disjoint_scopes_3",
+  "expect": "NO-FLOW",
+  "note": "3 disjoint scopes, each saving one local across a suspension; the sink prints the last scope's constant",
+  "size": "k=3",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 12,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c036",
+  "files": {
+   "kotlin": "kotlin/spillslot/036_disjoint_scopes_3.kt",
+   "rust": "rust/spillslot/036_disjoint_scopes_3.rs",
+   "cpp": "cpp/spillslot/036_disjoint_scopes_3.cpp"
+  }
+ },
+ {
+  "id": "037",
+  "family": "spillslot",
+  "name": "disjoint_scopes_5",
+  "expect": "NO-FLOW",
+  "note": "5 disjoint scopes, each saving one local across a suspension; the sink prints the last scope's constant",
+  "size": "k=5",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 18,
+  "suspensions": 5,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c037",
+  "files": {
+   "kotlin": "kotlin/spillslot/037_disjoint_scopes_5.kt",
+   "rust": "rust/spillslot/037_disjoint_scopes_5.rs",
+   "cpp": "cpp/spillslot/037_disjoint_scopes_5.cpp"
+  }
+ },
+ {
+  "id": "038",
+  "family": "spillslot",
+  "name": "disjoint_scopes_8",
+  "expect": "NO-FLOW",
+  "note": "8 disjoint scopes, each saving one local across a suspension; the sink prints the last scope's constant",
+  "size": "k=8",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 27,
+  "suspensions": 8,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c038",
+  "files": {
+   "kotlin": "kotlin/spillslot/038_disjoint_scopes_8.kt",
+   "rust": "rust/spillslot/038_disjoint_scopes_8.rs",
+   "cpp": "cpp/spillslot/038_disjoint_scopes_8.cpp"
+  }
+ },
+ {
+  "id": "039",
+  "family": "spillslot",
+  "name": "positive_control_2",
+  "expect": "FLOW",
+  "note": "as disjoint_scopes_2, but the sink prints the secret-derived value",
+  "size": "k=2",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c039",
+  "files": {
+   "kotlin": "kotlin/spillslot/039_positive_control_2.kt",
+   "rust": "rust/spillslot/039_positive_control_2.rs",
+   "cpp": "cpp/spillslot/039_positive_control_2.cpp"
+  }
+ },
+ {
+  "id": "040",
+  "family": "spillslot",
+  "name": "positive_control_5",
+  "expect": "FLOW",
+  "note": "as disjoint_scopes_5, but the sink prints the secret-derived value",
+  "size": "k=5",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 18,
+  "suspensions": 5,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c040",
+  "files": {
+   "kotlin": "kotlin/spillslot/040_positive_control_5.kt",
+   "rust": "rust/spillslot/040_positive_control_5.rs",
+   "cpp": "cpp/spillslot/040_positive_control_5.cpp"
+  }
+ },
+ {
+  "id": "041",
+  "family": "spillslot",
+  "name": "sibling_ifs_2",
+  "expect": "NO-FLOW",
+  "note": "2 sibling if-blocks with block-local saved variables",
+  "size": "k=2",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "if"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c041",
+  "files": {
+   "kotlin": "kotlin/spillslot/041_sibling_ifs_2.kt",
+   "rust": "rust/spillslot/041_sibling_ifs_2.rs",
+   "cpp": "cpp/spillslot/041_sibling_ifs_2.cpp"
+  }
+ },
+ {
+  "id": "042",
+  "family": "spillslot",
+  "name": "sibling_ifs_3",
+  "expect": "NO-FLOW",
+  "note": "3 sibling if-blocks with block-local saved variables",
+  "size": "k=3",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 12,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "if"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c042",
+  "files": {
+   "kotlin": "kotlin/spillslot/042_sibling_ifs_3.kt",
+   "rust": "rust/spillslot/042_sibling_ifs_3.rs",
+   "cpp": "cpp/spillslot/042_sibling_ifs_3.cpp"
+  }
+ },
+ {
+  "id": "043",
+  "family": "spillslot",
+  "name": "sequential_while",
+  "expect": "NO-FLOW",
+  "note": "two sequential loops with loop-local saved variables",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "while"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c043",
+  "files": {
+   "kotlin": "kotlin/spillslot/043_sequential_while.kt",
+   "rust": "rust/spillslot/043_sequential_while.rs",
+   "cpp": "cpp/spillslot/043_sequential_while.cpp"
+  }
+ },
+ {
+  "id": "044",
+  "family": "spillslot",
+  "name": "sequential_for",
+  "expect": "NO-FLOW",
+  "note": "two sequential for loops with loop-local saved variables",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "for"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c044",
+  "files": {
+   "kotlin": "kotlin/spillslot/044_sequential_for.kt",
+   "rust": "rust/spillslot/044_sequential_for.rs",
+   "cpp": "cpp/spillslot/044_sequential_for.cpp"
+  }
+ },
+ {
+  "id": "045",
+  "family": "spillslot",
+  "name": "nested_scopes",
+  "expect": "NO-FLOW",
+  "note": "disjoint scopes nested inside an outer scope",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 10,
+  "suspensions": 2,
+  "depth": 2,
+  "fns": [],
+  "features": [
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.spillslot.c045",
+  "files": {
+   "kotlin": "kotlin/spillslot/045_nested_scopes.kt",
+   "rust": "rust/spillslot/045_nested_scopes.rs",
+   "cpp": "cpp/spillslot/045_nested_scopes.cpp"
+  }
+ },
+ {
+  "id": "046",
+  "family": "sharedresult",
+  "name": "untainted_last_2",
+  "expect": "NO-FLOW",
+  "note": "2 suspend results; only the first is tainted, the sink prints the last",
+  "size": "n=2",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 4,
+  "suspensions": 3,
+  "depth": 0,
+  "fns": [
+   "identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.sharedresult.c046",
+  "files": {
+   "kotlin": "kotlin/sharedresult/046_untainted_last_2.kt",
+   "rust": "rust/sharedresult/046_untainted_last_2.rs",
+   "cpp": "cpp/sharedresult/046_untainted_last_2.cpp"
+  }
+ },
+ {
+  "id": "047",
+  "family": "sharedresult",
+  "name": "untainted_last_4",
+  "expect": "NO-FLOW",
+  "note": "4 suspend results; only the first is tainted, the sink prints the last",
+  "size": "n=4",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 8,
+  "suspensions": 7,
+  "depth": 0,
+  "fns": [
+   "identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.sharedresult.c047",
+  "files": {
+   "kotlin": "kotlin/sharedresult/047_untainted_last_4.kt",
+   "rust": "rust/sharedresult/047_untainted_last_4.rs",
+   "cpp": "cpp/sharedresult/047_untainted_last_4.cpp"
+  }
+ },
+ {
+  "id": "048",
+  "family": "sharedresult",
+  "name": "untainted_last_8",
+  "expect": "NO-FLOW",
+  "note": "8 suspend results; only the first is tainted, the sink prints the last",
+  "size": "n=8",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 16,
+  "suspensions": 15,
+  "depth": 0,
+  "fns": [
+   "identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.sharedresult.c048",
+  "files": {
+   "kotlin": "kotlin/sharedresult/048_untainted_last_8.kt",
+   "rust": "rust/sharedresult/048_untainted_last_8.rs",
+   "cpp": "cpp/sharedresult/048_untainted_last_8.cpp"
+  }
+ },
+ {
+  "id": "049",
+  "family": "sharedresult",
+  "name": "untainted_last_16",
+  "expect": "NO-FLOW",
+  "note": "16 suspend results; only the first is tainted, the sink prints the last",
+  "size": "n=16",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 32,
+  "suspensions": 31,
+  "depth": 0,
+  "fns": [
+   "identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.sharedresult.c049",
+  "files": {
+   "kotlin": "kotlin/sharedresult/049_untainted_last_16.kt",
+   "rust": "rust/sharedresult/049_untainted_last_16.rs",
+   "cpp": "cpp/sharedresult/049_untainted_last_16.cpp"
+  }
+ },
+ {
+  "id": "050",
+  "family": "sharedresult",
+  "name": "tainted_first_4",
+  "expect": "FLOW",
+  "note": "4 suspend results; the sink prints the tainted first one",
+  "size": "n=4",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 8,
+  "suspensions": 7,
+  "depth": 0,
+  "fns": [
+   "identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.sharedresult.c050",
+  "files": {
+   "kotlin": "kotlin/sharedresult/050_tainted_first_4.kt",
+   "rust": "rust/sharedresult/050_tainted_first_4.rs",
+   "cpp": "cpp/sharedresult/050_tainted_first_4.cpp"
+  }
+ },
+ {
+  "id": "051",
+  "family": "sharedresult",
+  "name": "tainted_first_16",
+  "expect": "FLOW",
+  "note": "16 suspend results; the sink prints the tainted first one",
+  "size": "n=16",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 32,
+  "suspensions": 31,
+  "depth": 0,
+  "fns": [
+   "identity"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.sharedresult.c051",
+  "files": {
+   "kotlin": "kotlin/sharedresult/051_tainted_first_16.kt",
+   "rust": "rust/sharedresult/051_tainted_first_16.rs",
+   "cpp": "cpp/sharedresult/051_tainted_first_16.cpp"
+  }
+ },
+ {
+  "id": "052",
+  "family": "whenswitch",
+  "name": "susp_in_arm",
+  "expect": "FLOW",
+  "note": "suspend call in one arm of a user switch",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 7,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "switch"
+  ],
+  "kt_package": "benchmarkgen.whenswitch.c052",
+  "files": {
+   "kotlin": "kotlin/whenswitch/052_susp_in_arm.kt",
+   "rust": "rust/whenswitch/052_susp_in_arm.rs",
+   "cpp": "cpp/whenswitch/052_susp_in_arm.cpp"
+  }
+ },
+ {
+  "id": "053",
+  "family": "whenswitch",
+  "name": "kill_all_arms",
+  "expect": "NO-FLOW",
+  "note": "every arm overwrites the sink's variable",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 10,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "switch"
+  ],
+  "kt_package": "benchmarkgen.whenswitch.c053",
+  "files": {
+   "kotlin": "kotlin/whenswitch/053_kill_all_arms.kt",
+   "rust": "rust/whenswitch/053_kill_all_arms.rs",
+   "cpp": "cpp/whenswitch/053_kill_all_arms.cpp"
+  }
+ },
+ {
+  "id": "054",
+  "family": "whenswitch",
+  "name": "sink_in_arm",
+  "expect": "FLOW",
+  "note": "the sink sits in a switch arm",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 6,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "switch"
+  ],
+  "kt_package": "benchmarkgen.whenswitch.c054",
+  "files": {
+   "kotlin": "kotlin/whenswitch/054_sink_in_arm.kt",
+   "rust": "rust/whenswitch/054_sink_in_arm.rs",
+   "cpp": "cpp/whenswitch/054_sink_in_arm.cpp"
+  }
+ },
+ {
+  "id": "055",
+  "family": "whenswitch",
+  "name": "switch_in_loop",
+  "expect": "FLOW",
+  "note": "switch inside a loop; two arms in sequence across iterations carry the taint",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 10,
+  "suspensions": 3,
+  "depth": 2,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.whenswitch.c055",
+  "files": {
+   "kotlin": "kotlin/whenswitch/055_switch_in_loop.kt",
+   "rust": "rust/whenswitch/055_switch_in_loop.rs",
+   "cpp": "cpp/whenswitch/055_switch_in_loop.cpp"
+  }
+ },
+ {
+  "id": "056",
+  "family": "whenswitch",
+  "name": "nested_switch_kill",
+  "expect": "NO-FLOW",
+  "note": "nested switches; every path overwrites the sink's variable",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 11,
+  "suspensions": 4,
+  "depth": 2,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "switch"
+  ],
+  "kt_package": "benchmarkgen.whenswitch.c056",
+  "files": {
+   "kotlin": "kotlin/whenswitch/056_nested_switch_kill.kt",
+   "rust": "rust/whenswitch/056_nested_switch_kill.rs",
+   "cpp": "cpp/whenswitch/056_nested_switch_kill.cpp"
+  }
+ },
+ {
+  "id": "057",
+  "family": "helper",
+  "name": "relay_depth_1",
+  "expect": "FLOW",
+  "note": "taint passes through 1 nested suspend helpers, each suspending first",
+  "size": "d=1",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 3,
+  "suspensions": 1,
+  "depth": 0,
+  "fns": [
+   "relay0"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.helper.c057",
+  "files": {
+   "kotlin": "kotlin/helper/057_relay_depth_1.kt",
+   "rust": "rust/helper/057_relay_depth_1.rs",
+   "cpp": "cpp/helper/057_relay_depth_1.cpp"
+  }
+ },
+ {
+  "id": "058",
+  "family": "helper",
+  "name": "relay_depth_2",
+  "expect": "FLOW",
+  "note": "taint passes through 2 nested suspend helpers, each suspending first",
+  "size": "d=2",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 3,
+  "suspensions": 1,
+  "depth": 0,
+  "fns": [
+   "relay1"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.helper.c058",
+  "files": {
+   "kotlin": "kotlin/helper/058_relay_depth_2.kt",
+   "rust": "rust/helper/058_relay_depth_2.rs",
+   "cpp": "cpp/helper/058_relay_depth_2.cpp"
+  }
+ },
+ {
+  "id": "059",
+  "family": "helper",
+  "name": "relay_depth_4",
+  "expect": "FLOW",
+  "note": "taint passes through 4 nested suspend helpers, each suspending first",
+  "size": "d=4",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 3,
+  "suspensions": 1,
+  "depth": 0,
+  "fns": [
+   "relay3"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.helper.c059",
+  "files": {
+   "kotlin": "kotlin/helper/059_relay_depth_4.kt",
+   "rust": "rust/helper/059_relay_depth_4.rs",
+   "cpp": "cpp/helper/059_relay_depth_4.cpp"
+  }
+ },
+ {
+  "id": "060",
+  "family": "helper",
+  "name": "relay_depth_8",
+  "expect": "FLOW",
+  "note": "taint passes through 8 nested suspend helpers, each suspending first",
+  "size": "d=8",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 3,
+  "suspensions": 1,
+  "depth": 0,
+  "fns": [
+   "relay7"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.helper.c060",
+  "files": {
+   "kotlin": "kotlin/helper/060_relay_depth_8.kt",
+   "rust": "rust/helper/060_relay_depth_8.rs",
+   "cpp": "cpp/helper/060_relay_depth_8.cpp"
+  }
+ },
+ {
+  "id": "061",
+  "family": "helper",
+  "name": "sdrop",
+  "expect": "NO-FLOW",
+  "note": "suspend helper suspends and returns a constant",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 4,
+  "suspensions": 2,
+  "depth": 0,
+  "fns": [
+   "sdrop"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.helper.c061",
+  "files": {
+   "kotlin": "kotlin/helper/061_sdrop.kt",
+   "rust": "rust/helper/061_sdrop.rs",
+   "cpp": "cpp/helper/061_sdrop.cpp"
+  }
+ },
+ {
+  "id": "062",
+  "family": "helper",
+  "name": "relay_of_sdrop",
+  "expect": "NO-FLOW",
+  "note": "constant-returning helper inside a relay chain",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 3,
+  "suspensions": 2,
+  "depth": 0,
+  "fns": [
+   "relay3",
+   "sdrop"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.helper.c062",
+  "files": {
+   "kotlin": "kotlin/helper/062_relay_of_sdrop.kt",
+   "rust": "rust/helper/062_relay_of_sdrop.rs",
+   "cpp": "cpp/helper/062_relay_of_sdrop.cpp"
+  }
+ },
+ {
+  "id": "063",
+  "family": "helper",
+  "name": "plain_pass",
+  "expect": "FLOW",
+  "note": "ordinary function around a suspend call",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 4,
+  "suspensions": 2,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "pass"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.helper.c063",
+  "files": {
+   "kotlin": "kotlin/helper/063_plain_pass.kt",
+   "rust": "rust/helper/063_plain_pass.rs",
+   "cpp": "cpp/helper/063_plain_pass.cpp"
+  }
+ },
+ {
+  "id": "064",
+  "family": "helper",
+  "name": "plain_konst",
+  "expect": "NO-FLOW",
+  "note": "ordinary constant-returning function around a suspend call",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 4,
+  "suspensions": 2,
+  "depth": 0,
+  "fns": [
+   "identity",
+   "konst"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.helper.c064",
+  "files": {
+   "kotlin": "kotlin/helper/064_plain_konst.kt",
+   "rust": "rust/helper/064_plain_konst.rs",
+   "cpp": "cpp/helper/064_plain_konst.cpp"
+  }
+ },
+ {
+  "id": "065",
+  "family": "field",
+  "name": "field_carry",
+  "expect": "FLOW",
+  "note": "taint stored in a field across a suspension",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 5,
+  "suspensions": 1,
+  "depth": 0,
+  "fns": [],
+  "features": [
+   "field"
+  ],
+  "kt_package": "benchmarkgen.field.c065",
+  "files": {
+   "kotlin": "kotlin/field/065_field_carry.kt",
+   "rust": "rust/field/065_field_carry.rs",
+   "cpp": "cpp/field/065_field_carry.cpp"
+  }
+ },
+ {
+  "id": "066",
+  "family": "field",
+  "name": "other_field",
+  "expect": "NO-FLOW",
+  "note": "taint in f0, the sink reads f1",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 6,
+  "suspensions": 1,
+  "depth": 0,
+  "fns": [],
+  "features": [
+   "field"
+  ],
+  "kt_package": "benchmarkgen.field.c066",
+  "files": {
+   "kotlin": "kotlin/field/066_other_field.kt",
+   "rust": "rust/field/066_other_field.rs",
+   "cpp": "cpp/field/066_other_field.cpp"
+  }
+ },
+ {
+  "id": "067",
+  "family": "field",
+  "name": "field_strong_update",
+  "expect": "NO-FLOW",
+  "note": "the tainted field is overwritten after the suspension",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 6,
+  "suspensions": 2,
+  "depth": 0,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "field"
+  ],
+  "kt_package": "benchmarkgen.field.c067",
+  "files": {
+   "kotlin": "kotlin/field/067_field_strong_update.kt",
+   "rust": "rust/field/067_field_strong_update.rs",
+   "cpp": "cpp/field/067_field_strong_update.cpp"
+  }
+ },
+ {
+  "id": "068",
+  "family": "field",
+  "name": "field_loop_shift",
+  "expect": "FLOW",
+  "note": "f0 -> f1 shift inside a loop needs two iterations",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 7,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "field",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.field.c068",
+  "files": {
+   "kotlin": "kotlin/field/068_field_loop_shift.kt",
+   "rust": "rust/field/068_field_loop_shift.rs",
+   "cpp": "cpp/field/068_field_loop_shift.cpp"
+  }
+ },
+ {
+  "id": "069",
+  "family": "field",
+  "name": "field_branch",
+  "expect": "FLOW",
+  "note": "field tainted on one branch",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 8,
+  "suspensions": 1,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "field",
+   "if"
+  ],
+  "kt_package": "benchmarkgen.field.c069",
+  "files": {
+   "kotlin": "kotlin/field/069_field_branch.kt",
+   "rust": "rust/field/069_field_branch.rs",
+   "cpp": "cpp/field/069_field_branch.cpp"
+  }
+ },
+ {
+  "id": "070",
+  "family": "lambda",
+  "name": "lambda_pass",
+  "expect": "FLOW",
+  "note": "suspending lambda returns its argument",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 4,
+  "suspensions": 1,
+  "depth": 0,
+  "fns": [
+   "lam"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.lambda.c070",
+  "files": {
+   "kotlin": "kotlin/lambda/070_lambda_pass.kt",
+   "rust": "rust/lambda/070_lambda_pass.rs",
+   "cpp": "cpp/lambda/070_lambda_pass.cpp"
+  }
+ },
+ {
+  "id": "071",
+  "family": "lambda",
+  "name": "lambda_drop",
+  "expect": "NO-FLOW",
+  "note": "suspending lambda returns a constant",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 4,
+  "suspensions": 1,
+  "depth": 0,
+  "fns": [
+   "lamdrop"
+  ],
+  "features": [],
+  "kt_package": "benchmarkgen.lambda.c071",
+  "files": {
+   "kotlin": "kotlin/lambda/071_lambda_drop.kt",
+   "rust": "rust/lambda/071_lambda_drop.rs",
+   "cpp": "cpp/lambda/071_lambda_drop.cpp"
+  }
+ },
+ {
+  "id": "072",
+  "family": "lambda",
+  "name": "lambda_in_loop",
+  "expect": "FLOW",
+  "note": "lambda call in a loop, taint arrives on the second iteration",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 8,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "lam"
+  ],
+  "features": [
+   "while"
+  ],
+  "kt_package": "benchmarkgen.lambda.c072",
+  "files": {
+   "kotlin": "kotlin/lambda/072_lambda_in_loop.kt",
+   "rust": "rust/lambda/072_lambda_in_loop.rs",
+   "cpp": "cpp/lambda/072_lambda_in_loop.cpp"
+  }
+ },
+ {
+  "id": "073",
+  "family": "earlyreturn",
+  "name": "guard_return",
+  "expect": "FLOW",
+  "note": "an early return that may not be taken",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 5,
+  "suspensions": 1,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "if",
+   "return"
+  ],
+  "kt_package": "benchmarkgen.earlyreturn.c073",
+  "files": {
+   "kotlin": "kotlin/earlyreturn/073_guard_return.kt",
+   "rust": "rust/earlyreturn/073_guard_return.rs",
+   "cpp": "cpp/earlyreturn/073_guard_return.cpp"
+  }
+ },
+ {
+  "id": "074",
+  "family": "earlyreturn",
+  "name": "return_else",
+  "expect": "NO-FLOW",
+  "note": "the only path to the sink overwrites first; the other returns",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 8,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "if",
+   "return"
+  ],
+  "kt_package": "benchmarkgen.earlyreturn.c074",
+  "files": {
+   "kotlin": "kotlin/earlyreturn/074_return_else.kt",
+   "rust": "rust/earlyreturn/074_return_else.rs",
+   "cpp": "cpp/earlyreturn/074_return_else.cpp"
+  }
+ },
+ {
+  "id": "075",
+  "family": "earlyreturn",
+  "name": "return_in_loop",
+  "expect": "NO-FLOW",
+  "note": "leaving the loop with the taint means returning; normal exit overwrites",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 10,
+  "suspensions": 2,
+  "depth": 2,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "if",
+   "return",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.earlyreturn.c075",
+  "files": {
+   "kotlin": "kotlin/earlyreturn/075_return_in_loop.kt",
+   "rust": "rust/earlyreturn/075_return_in_loop.rs",
+   "cpp": "cpp/earlyreturn/075_return_in_loop.cpp"
+  }
+ },
+ {
+  "id": "076",
+  "family": "trycatch",
+  "name": "susp_in_try",
+  "expect": "FLOW",
+  "note": "suspend call in a try body, sink after",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.trycatch.c076",
+  "files": {
+   "kotlin": "kotlin/trycatch/076_susp_in_try.kt",
+   "cpp": "cpp/trycatch/076_susp_in_try.cpp"
+  }
+ },
+ {
+  "id": "077",
+  "family": "trycatch",
+  "name": "exceptional_flow",
+  "expect": "FLOW",
+  "note": "the overwrite is skipped when mayThrow throws",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 10,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.trycatch.c077",
+  "files": {
+   "kotlin": "kotlin/trycatch/077_exceptional_flow.kt",
+   "cpp": "cpp/trycatch/077_exceptional_flow.cpp"
+  }
+ },
+ {
+  "id": "078",
+  "family": "trycatch",
+  "name": "exceptional_kill",
+  "expect": "NO-FLOW",
+  "note": "both the normal path and the handler overwrite",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 11,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.trycatch.c078",
+  "files": {
+   "kotlin": "kotlin/trycatch/078_exceptional_kill.kt",
+   "cpp": "cpp/trycatch/078_exceptional_kill.cpp"
+  }
+ },
+ {
+  "id": "079",
+  "family": "trycatch",
+  "name": "two_catches_one_leaks",
+  "expect": "FLOW",
+  "note": "two handlers; the second leaves the tainted value",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 12,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.trycatch.c079",
+  "files": {
+   "kotlin": "kotlin/trycatch/079_two_catches_one_leaks.kt",
+   "cpp": "cpp/trycatch/079_two_catches_one_leaks.cpp"
+  }
+ },
+ {
+  "id": "080",
+  "family": "trycatch",
+  "name": "two_catches_both_kill",
+  "expect": "NO-FLOW",
+  "note": "two handlers, both overwrite",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 13,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.trycatch.c080",
+  "files": {
+   "kotlin": "kotlin/trycatch/080_two_catches_both_kill.kt",
+   "cpp": "cpp/trycatch/080_two_catches_both_kill.cpp"
+  }
+ },
+ {
+  "id": "081",
+  "family": "trycatch",
+  "name": "try_in_loop",
+  "expect": "FLOW",
+  "note": "caught exception keeps the taint for the next iteration's copy",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 12,
+  "suspensions": 2,
+  "depth": 2,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.trycatch.c081",
+  "files": {
+   "kotlin": "kotlin/trycatch/081_try_in_loop.kt",
+   "cpp": "cpp/trycatch/081_try_in_loop.cpp"
+  }
+ },
+ {
+  "id": "082",
+  "family": "trycatch",
+  "name": "nested_try_kill",
+  "expect": "NO-FLOW",
+  "note": "inner try overwrites on both paths; outer handler sees a constant",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 14,
+  "suspensions": 2,
+  "depth": 2,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.trycatch.c082",
+  "files": {
+   "kotlin": "kotlin/trycatch/082_nested_try_kill.kt",
+   "cpp": "cpp/trycatch/082_nested_try_kill.cpp"
+  }
+ },
+ {
+  "id": "083",
+  "family": "trycatch",
+  "name": "sink_in_catch",
+  "expect": "FLOW",
+  "note": "the sink is in the handler",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.trycatch.c083",
+  "files": {
+   "kotlin": "kotlin/trycatch/083_sink_in_catch.kt",
+   "cpp": "cpp/trycatch/083_sink_in_catch.cpp"
+  }
+ },
+ {
+  "id": "084",
+  "family": "trycatch",
+  "name": "susp_in_catch",
+  "expect": "FLOW",
+  "note": "suspend calls inside the handler (not allowed in C++)",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin"
+  ],
+  "liveAtSink": true,
+  "stmts": 10,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.trycatch.c084",
+  "files": {
+   "kotlin": "kotlin/trycatch/084_susp_in_catch.kt"
+  }
+ },
+ {
+  "id": "085",
+  "family": "trycatch",
+  "name": "susp_in_catch_kill",
+  "expect": "NO-FLOW",
+  "note": "suspend calls inside the handler, which overwrites",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin"
+  ],
+  "liveAtSink": true,
+  "stmts": 11,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.trycatch.c085",
+  "files": {
+   "kotlin": "kotlin/trycatch/085_susp_in_catch_kill.kt"
+  }
+ },
+ {
+  "id": "086",
+  "family": "tryfinally",
+  "name": "finally_suspend",
+  "expect": "FLOW",
+  "note": "suspend call in finally (kotlinc duplicates the finally block)",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.tryfinally.c086",
+  "files": {
+   "kotlin": "kotlin/tryfinally/086_finally_suspend.kt"
+  }
+ },
+ {
+  "id": "087",
+  "family": "tryfinally",
+  "name": "finally_kill",
+  "expect": "NO-FLOW",
+  "note": "finally overwrites on every path, around a suspension",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "kotlin"
+  ],
+  "liveAtSink": true,
+  "stmts": 11,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "throw",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.tryfinally.c087",
+  "files": {
+   "kotlin": "kotlin/tryfinally/087_finally_kill.kt"
+  }
+ },
+ {
+  "id": "088",
+  "family": "asyncblock",
+  "name": "block_pass",
+  "expect": "FLOW",
+  "note": "async block awaited in place",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "rust"
+  ],
+  "liveAtSink": true,
+  "stmts": 4,
+  "suspensions": 1,
+  "depth": 0,
+  "fns": [],
+  "features": [
+   "ablock"
+  ],
+  "kt_package": "benchmarkgen.asyncblock.c088",
+  "files": {
+   "rust": "rust/asyncblock/088_block_pass.rs"
+  }
+ },
+ {
+  "id": "089",
+  "family": "asyncblock",
+  "name": "block_const",
+  "expect": "NO-FLOW",
+  "note": "async block returns a constant",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "rust"
+  ],
+  "liveAtSink": true,
+  "stmts": 5,
+  "suspensions": 2,
+  "depth": 0,
+  "fns": [],
+  "features": [
+   "ablock"
+  ],
+  "kt_package": "benchmarkgen.asyncblock.c089",
+  "files": {
+   "rust": "rust/asyncblock/089_block_const.rs"
+  }
+ },
+ {
+  "id": "090",
+  "family": "asyncblock",
+  "name": "block_in_loop",
+  "expect": "FLOW",
+  "note": "async block in a loop, taint arrives on the second iteration",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "rust"
+  ],
+  "liveAtSink": true,
+  "stmts": 8,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "ablock",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.asyncblock.c090",
+  "files": {
+   "rust": "rust/asyncblock/090_block_in_loop.rs"
+  }
+ },
+ {
+  "id": "091",
+  "family": "asyncblock",
+  "name": "nested_blocks",
+  "expect": "FLOW",
+  "note": "async block inside an async block",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "rust"
+  ],
+  "liveAtSink": true,
+  "stmts": 4,
+  "suspensions": 2,
+  "depth": 0,
+  "fns": [],
+  "features": [
+   "ablock"
+  ],
+  "kt_package": "benchmarkgen.asyncblock.c091",
+  "files": {
+   "rust": "rust/asyncblock/091_nested_blocks.rs"
+  }
+ },
+ {
+  "id": "092",
+  "family": "asyncblock",
+  "name": "block_scopes",
+  "expect": "NO-FLOW",
+  "note": "spill-slot shape with async blocks in each scope",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "rust"
+  ],
+  "liveAtSink": true,
+  "stmts": 9,
+  "suspensions": 4,
+  "depth": 1,
+  "fns": [],
+  "features": [
+   "ablock",
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.asyncblock.c092",
+  "files": {
+   "rust": "rust/asyncblock/092_block_scopes.rs"
+  }
+ },
+ {
+  "id": "093",
+  "family": "asyncblock",
+  "name": "block_kill",
+  "expect": "NO-FLOW",
+  "note": "async block result overwritten after a suspension",
+  "size": "-",
+  "kind": "template",
+  "langs": [
+   "rust"
+  ],
+  "liveAtSink": true,
+  "stmts": 7,
+  "suspensions": 2,
+  "depth": 0,
+  "fns": [],
+  "features": [
+   "ablock"
+  ],
+  "kt_package": "benchmarkgen.asyncblock.c093",
+  "files": {
+   "rust": "rust/asyncblock/093_block_kill.rs"
+  }
+ },
+ {
+  "id": "094",
+  "family": "random",
+  "name": "s_01",
+  "expect": "FLOW",
+  "note": "random structured program, size class S",
+  "size": "S",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 13,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity",
+   "konst"
+  ],
+  "features": [
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.random.c094",
+  "files": {
+   "kotlin": "kotlin/random/094_s_01.kt",
+   "rust": "rust/random/094_s_01.rs",
+   "cpp": "cpp/random/094_s_01.cpp"
+  }
+ },
+ {
+  "id": "095",
+  "family": "random",
+  "name": "s_02",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class S",
+  "size": "S",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 13,
+  "suspensions": 1,
+  "depth": 1,
+  "fns": [
+   "identity",
+   "konst"
+  ],
+  "features": [
+   "switch"
+  ],
+  "kt_package": "benchmarkgen.random.c095",
+  "files": {
+   "kotlin": "kotlin/random/095_s_02.kt",
+   "rust": "rust/random/095_s_02.rs",
+   "cpp": "cpp/random/095_s_02.cpp"
+  }
+ },
+ {
+  "id": "096",
+  "family": "random",
+  "name": "s_03",
+  "expect": "FLOW",
+  "note": "random structured program, size class S",
+  "size": "S",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 13,
+  "suspensions": 2,
+  "depth": 1,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c096",
+  "files": {
+   "kotlin": "kotlin/random/096_s_03.kt",
+   "rust": "rust/random/096_s_03.rs",
+   "cpp": "cpp/random/096_s_03.cpp"
+  }
+ },
+ {
+  "id": "097",
+  "family": "random",
+  "name": "s_04",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class S",
+  "size": "S",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 13,
+  "suspensions": 3,
+  "depth": 1,
+  "fns": [
+   "identity",
+   "pass"
+  ],
+  "features": [
+   "if",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c097",
+  "files": {
+   "kotlin": "kotlin/random/097_s_04.kt",
+   "rust": "rust/random/097_s_04.rs",
+   "cpp": "cpp/random/097_s_04.cpp"
+  }
+ },
+ {
+  "id": "098",
+  "family": "random",
+  "name": "s_05",
+  "expect": "FLOW",
+  "note": "random structured program, size class S",
+  "size": "S",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 13,
+  "suspensions": 4,
+  "depth": 2,
+  "fns": [
+   "identity"
+  ],
+  "features": [
+   "if",
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.random.c098",
+  "files": {
+   "kotlin": "kotlin/random/098_s_05.kt",
+   "rust": "rust/random/098_s_05.rs",
+   "cpp": "cpp/random/098_s_05.cpp"
+  }
+ },
+ {
+  "id": "099",
+  "family": "random",
+  "name": "s_06",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class S",
+  "size": "S",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 13,
+  "suspensions": 1,
+  "depth": 1,
+  "fns": [
+   "pass"
+  ],
+  "features": [
+   "field",
+   "if"
+  ],
+  "kt_package": "benchmarkgen.random.c099",
+  "files": {
+   "kotlin": "kotlin/random/099_s_06.kt",
+   "rust": "rust/random/099_s_06.rs",
+   "cpp": "cpp/random/099_s_06.cpp"
+  }
+ },
+ {
+  "id": "100",
+  "family": "random",
+  "name": "m_01",
+  "expect": "FLOW",
+  "note": "random structured program, size class M",
+  "size": "M",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 40,
+  "suspensions": 14,
+  "depth": 3,
+  "fns": [
+   "identity",
+   "other_identity",
+   "pass",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "do",
+   "field",
+   "for",
+   "if",
+   "switch"
+  ],
+  "kt_package": "benchmarkgen.random.c100",
+  "files": {
+   "kotlin": "kotlin/random/100_m_01.kt",
+   "rust": "rust/random/100_m_01.rs",
+   "cpp": "cpp/random/100_m_01.cpp"
+  }
+ },
+ {
+  "id": "101",
+  "family": "random",
+  "name": "m_02",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class M",
+  "size": "M",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 40,
+  "suspensions": 17,
+  "depth": 4,
+  "fns": [
+   "identity",
+   "other_identity",
+   "relay0"
+  ],
+  "features": [
+   "break",
+   "for",
+   "if",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c101",
+  "files": {
+   "kotlin": "kotlin/random/101_m_02.kt",
+   "rust": "rust/random/101_m_02.rs",
+   "cpp": "cpp/random/101_m_02.cpp"
+  }
+ },
+ {
+  "id": "102",
+  "family": "random",
+  "name": "m_03",
+  "expect": "FLOW",
+  "note": "random structured program, size class M",
+  "size": "M",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 40,
+  "suspensions": 11,
+  "depth": 4,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0"
+  ],
+  "features": [
+   "continue",
+   "field",
+   "for",
+   "if",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c102",
+  "files": {
+   "kotlin": "kotlin/random/102_m_03.kt",
+   "rust": "rust/random/102_m_03.rs",
+   "cpp": "cpp/random/102_m_03.cpp"
+  }
+ },
+ {
+  "id": "103",
+  "family": "random",
+  "name": "m_04",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class M",
+  "size": "M",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 40,
+  "suspensions": 9,
+  "depth": 2,
+  "fns": [
+   "identity",
+   "konst",
+   "pass",
+   "relay0"
+  ],
+  "features": [
+   "field",
+   "for",
+   "if",
+   "return",
+   "switch"
+  ],
+  "kt_package": "benchmarkgen.random.c103",
+  "files": {
+   "kotlin": "kotlin/random/103_m_04.kt",
+   "rust": "rust/random/103_m_04.rs",
+   "cpp": "cpp/random/103_m_04.cpp"
+  }
+ },
+ {
+  "id": "104",
+  "family": "random",
+  "name": "m_05",
+  "expect": "FLOW",
+  "note": "random structured program, size class M",
+  "size": "M",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 40,
+  "suspensions": 15,
+  "depth": 4,
+  "fns": [
+   "identity",
+   "other_identity",
+   "relay0"
+  ],
+  "features": [
+   "if",
+   "return",
+   "scope"
+  ],
+  "kt_package": "benchmarkgen.random.c104",
+  "files": {
+   "kotlin": "kotlin/random/104_m_05.kt",
+   "rust": "rust/random/104_m_05.rs",
+   "cpp": "cpp/random/104_m_05.cpp"
+  }
+ },
+ {
+  "id": "105",
+  "family": "random",
+  "name": "m_06",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class M",
+  "size": "M",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 39,
+  "suspensions": 14,
+  "depth": 3,
+  "fns": [
+   "identity",
+   "pass",
+   "relay0",
+   "sdrop"
+  ],
+  "features": [
+   "do",
+   "field",
+   "if",
+   "scope",
+   "switch"
+  ],
+  "kt_package": "benchmarkgen.random.c105",
+  "files": {
+   "kotlin": "kotlin/random/105_m_06.kt",
+   "rust": "rust/random/105_m_06.rs",
+   "cpp": "cpp/random/105_m_06.cpp"
+  }
+ },
+ {
+  "id": "106",
+  "family": "random",
+  "name": "l_01",
+  "expect": "FLOW",
+  "note": "random structured program, size class L",
+  "size": "L",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 112,
+  "suspensions": 27,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "continue",
+   "do",
+   "field",
+   "for",
+   "if",
+   "return",
+   "scope",
+   "switch"
+  ],
+  "kt_package": "benchmarkgen.random.c106",
+  "files": {
+   "kotlin": "kotlin/random/106_l_01.kt",
+   "rust": "rust/random/106_l_01.rs",
+   "cpp": "cpp/random/106_l_01.cpp"
+  }
+ },
+ {
+  "id": "107",
+  "family": "random",
+  "name": "l_02",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class L",
+  "size": "L",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 111,
+  "suspensions": 38,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "do",
+   "field",
+   "for",
+   "if",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c107",
+  "files": {
+   "kotlin": "kotlin/random/107_l_02.kt",
+   "rust": "rust/random/107_l_02.rs",
+   "cpp": "cpp/random/107_l_02.cpp"
+  }
+ },
+ {
+  "id": "108",
+  "family": "random",
+  "name": "l_03",
+  "expect": "FLOW",
+  "note": "random structured program, size class L",
+  "size": "L",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 117,
+  "suspensions": 42,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "continue",
+   "for",
+   "if",
+   "return",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c108",
+  "files": {
+   "kotlin": "kotlin/random/108_l_03.kt",
+   "rust": "rust/random/108_l_03.rs",
+   "cpp": "cpp/random/108_l_03.cpp"
+  }
+ },
+ {
+  "id": "109",
+  "family": "random",
+  "name": "l_04",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class L",
+  "size": "L",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 113,
+  "suspensions": 35,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "continue",
+   "do",
+   "field",
+   "for",
+   "if",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c109",
+  "files": {
+   "kotlin": "kotlin/random/109_l_04.kt",
+   "rust": "rust/random/109_l_04.rs",
+   "cpp": "cpp/random/109_l_04.cpp"
+  }
+ },
+ {
+  "id": "110",
+  "family": "random",
+  "name": "l_05",
+  "expect": "FLOW",
+  "note": "random structured program, size class L",
+  "size": "L",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 111,
+  "suspensions": 30,
+  "depth": 4,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "do",
+   "field",
+   "for",
+   "if",
+   "return",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c110",
+  "files": {
+   "kotlin": "kotlin/random/110_l_05.kt",
+   "rust": "rust/random/110_l_05.rs",
+   "cpp": "cpp/random/110_l_05.cpp"
+  }
+ },
+ {
+  "id": "111",
+  "family": "random",
+  "name": "l_06",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class L",
+  "size": "L",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 112,
+  "suspensions": 30,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "do",
+   "field",
+   "for",
+   "if",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c111",
+  "files": {
+   "kotlin": "kotlin/random/111_l_06.kt",
+   "rust": "rust/random/111_l_06.rs",
+   "cpp": "cpp/random/111_l_06.cpp"
+  }
+ },
+ {
+  "id": "112",
+  "family": "random",
+  "name": "xl_01",
+  "expect": "FLOW",
+  "note": "random structured program, size class XL",
+  "size": "XL",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 321,
+  "suspensions": 107,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "continue",
+   "do",
+   "for",
+   "if",
+   "return",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c112",
+  "files": {
+   "kotlin": "kotlin/random/112_xl_01.kt",
+   "rust": "rust/random/112_xl_01.rs",
+   "cpp": "cpp/random/112_xl_01.cpp"
+  }
+ },
+ {
+  "id": "113",
+  "family": "random",
+  "name": "xl_02",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class XL",
+  "size": "XL",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 318,
+  "suspensions": 125,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "do",
+   "for",
+   "if",
+   "return",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c113",
+  "files": {
+   "kotlin": "kotlin/random/113_xl_02.kt",
+   "rust": "rust/random/113_xl_02.rs",
+   "cpp": "cpp/random/113_xl_02.cpp"
+  }
+ },
+ {
+  "id": "114",
+  "family": "random",
+  "name": "xl_03",
+  "expect": "FLOW",
+  "note": "random structured program, size class XL",
+  "size": "XL",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 322,
+  "suspensions": 97,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "continue",
+   "do",
+   "for",
+   "if",
+   "return",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c114",
+  "files": {
+   "kotlin": "kotlin/random/114_xl_03.kt",
+   "rust": "rust/random/114_xl_03.rs",
+   "cpp": "cpp/random/114_xl_03.cpp"
+  }
+ },
+ {
+  "id": "115",
+  "family": "random",
+  "name": "xl_04",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class XL",
+  "size": "XL",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 323,
+  "suspensions": 108,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "continue",
+   "do",
+   "field",
+   "for",
+   "if",
+   "return",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c115",
+  "files": {
+   "kotlin": "kotlin/random/115_xl_04.kt",
+   "rust": "rust/random/115_xl_04.rs",
+   "cpp": "cpp/random/115_xl_04.cpp"
+  }
+ },
+ {
+  "id": "116",
+  "family": "random",
+  "name": "xl_05",
+  "expect": "FLOW",
+  "note": "random structured program, size class XL",
+  "size": "XL",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 316,
+  "suspensions": 107,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "continue",
+   "do",
+   "for",
+   "if",
+   "return",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c116",
+  "files": {
+   "kotlin": "kotlin/random/116_xl_05.kt",
+   "rust": "rust/random/116_xl_05.rs",
+   "cpp": "cpp/random/116_xl_05.cpp"
+  }
+ },
+ {
+  "id": "117",
+  "family": "random",
+  "name": "xl_06",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class XL",
+  "size": "XL",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "rust",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 321,
+  "suspensions": 108,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "continue",
+   "do",
+   "field",
+   "for",
+   "if",
+   "return",
+   "scope",
+   "switch",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.random.c117",
+  "files": {
+   "kotlin": "kotlin/random/117_xl_06.kt",
+   "rust": "rust/random/117_xl_06.rs",
+   "cpp": "cpp/random/117_xl_06.cpp"
+  }
+ },
+ {
+  "id": "118",
+  "family": "randomexc",
+  "name": "m_01",
+  "expect": "FLOW",
+  "note": "random structured program, size class M",
+  "size": "M",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 39,
+  "suspensions": 14,
+  "depth": 3,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1"
+  ],
+  "features": [
+   "do",
+   "field",
+   "if",
+   "switch",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.randomexc.c118",
+  "files": {
+   "kotlin": "kotlin/randomexc/118_m_01.kt",
+   "cpp": "cpp/randomexc/118_m_01.cpp"
+  }
+ },
+ {
+  "id": "119",
+  "family": "randomexc",
+  "name": "m_02",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class M",
+  "size": "M",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 39,
+  "suspensions": 10,
+  "depth": 3,
+  "fns": [
+   "identity",
+   "konst",
+   "pass",
+   "relay0",
+   "relay1"
+  ],
+  "features": [
+   "field",
+   "if",
+   "scope",
+   "switch",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.randomexc.c119",
+  "files": {
+   "kotlin": "kotlin/randomexc/119_m_02.kt",
+   "cpp": "cpp/randomexc/119_m_02.cpp"
+  }
+ },
+ {
+  "id": "120",
+  "family": "randomexc",
+  "name": "l_01",
+  "expect": "FLOW",
+  "note": "random structured program, size class L",
+  "size": "L",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 113,
+  "suspensions": 26,
+  "depth": 5,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "for",
+   "if",
+   "return",
+   "scope",
+   "switch",
+   "throw",
+   "try",
+   "while"
+  ],
+  "kt_package": "benchmarkgen.randomexc.c120",
+  "files": {
+   "kotlin": "kotlin/randomexc/120_l_01.kt",
+   "cpp": "cpp/randomexc/120_l_01.cpp"
+  }
+ },
+ {
+  "id": "121",
+  "family": "randomexc",
+  "name": "l_02",
+  "expect": "NO-FLOW",
+  "note": "random structured program, size class L",
+  "size": "L",
+  "kind": "random",
+  "langs": [
+   "kotlin",
+   "cpp"
+  ],
+  "liveAtSink": true,
+  "stmts": 111,
+  "suspensions": 31,
+  "depth": 4,
+  "fns": [
+   "identity",
+   "konst",
+   "other_identity",
+   "pass",
+   "relay0",
+   "relay1",
+   "sdrop"
+  ],
+  "features": [
+   "break",
+   "for",
+   "if",
+   "switch",
+   "try"
+  ],
+  "kt_package": "benchmarkgen.randomexc.c121",
+  "files": {
+   "kotlin": "kotlin/randomexc/121_l_02.kt",
+   "cpp": "cpp/randomexc/121_l_02.cpp"
+  }
+ }
+]

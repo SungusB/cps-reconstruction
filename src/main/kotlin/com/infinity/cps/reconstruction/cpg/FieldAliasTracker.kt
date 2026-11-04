@@ -143,7 +143,13 @@ object FieldAliasTracker {
      * not actually connected within a single execution.
      */
     fun findFieldDdgEdges(data: CpgData): List<CpgEdge> {
-        val edges = mutableListOf<CpgEdge>()
+        // A set, and one memoized BFS per source statement: the original
+        // per-pair BFS plus `edge !in edges` on a list was roughly cubic in
+        // method size, and took >10 minutes on the raw (unreconstructed)
+        // generated-suite bodies, which carry hundreds of spill-field
+        // accesses. Same edges, same order.
+        val edges = linkedSetOf<CpgEdge>()
+        val reach = Reachability(data)
         val accesses = findFieldAccesses(data)
 
         val byField = linkedMapOf<String, MutableList<FieldAccess>>()
@@ -156,19 +162,18 @@ object FieldAliasTracker {
             val reads = fieldAccesses.filter { !it.isWrite }
             for (write in writes) {
                 for (read in reads) {
-                    if (read.stmtIdx != write.stmtIdx && isReachable(data, write.stmtIdx, read.stmtIdx)) {
-                        val edge = CpgEdge(write.stmtIdx, read.stmtIdx, EdgeKind.DDG, variable = "field:${write.fieldName}")
-                        if (edge !in edges) edges.add(edge)
+                    if (read.stmtIdx != write.stmtIdx && reach.isReachable(write.stmtIdx, read.stmtIdx)) {
+                        edges.add(CpgEdge(write.stmtIdx, read.stmtIdx, EdgeKind.DDG, variable = "field:${write.fieldName}"))
                     }
                 }
             }
         }
 
-        addLocalAliasEdges(data, accesses, edges)
-        return edges
+        addLocalAliasEdges(data, accesses, edges, reach)
+        return edges.toList()
     }
 
-    private fun addLocalAliasEdges(data: CpgData, accesses: List<FieldAccess>, edges: MutableList<CpgEdge>) {
+    private fun addLocalAliasEdges(data: CpgData, accesses: List<FieldAccess>, edges: MutableSet<CpgEdge>, reach: Reachability) {
         for (i in data.stmtLabels.indices) {
             val stmt = data.indexToStmt[i] as? JAssignStmt ?: continue
             val defOpt = stmt.def
@@ -178,34 +183,35 @@ object FieldAliasTracker {
             if (right !is Local) continue
 
             for (acc in accesses) {
-                if (acc.isWrite || acc.stmtIdx == i || !isReachable(data, acc.stmtIdx, i)) continue
+                if (acc.isWrite || acc.stmtIdx == i || !reach.isReachable(acc.stmtIdx, i)) continue
                 val fieldReadStmt = data.indexToStmt[acc.stmtIdx] as? JAssignStmt ?: continue
                 val fieldDef = fieldReadStmt.def
                 if (fieldDef.isPresent && fieldDef.get() is Local && (fieldDef.get() as Local).name == right.name) {
-                    val edge = CpgEdge(acc.stmtIdx, i, EdgeKind.DDG, variable = "alias:${acc.fieldName}")
-                    if (edge !in edges) edges.add(edge)
+                    edges.add(CpgEdge(acc.stmtIdx, i, EdgeKind.DDG, variable = "alias:${acc.fieldName}"))
                 }
             }
         }
     }
 
-    private fun isReachable(data: CpgData, from: Int, to: Int): Boolean {
-        if (from == to) return true
-        val visited = linkedSetOf<Int>()
-        val queue: java.util.Queue<Int> = LinkedList()
-        queue.add(from)
-        visited.add(from)
-        while (queue.isNotEmpty()) {
-            val curr = queue.poll()
-            for (succ in data.cfgSuccessors[curr].orEmpty()) {
-                if (succ == to) return true
-                if (succ !in visited) {
-                    visited.add(succ)
-                    queue.add(succ)
+    /** CFG reachability over one or more steps, one BFS per source statement, cached. */
+    private class Reachability(private val data: CpgData) {
+        private val cache = HashMap<Int, Set<Int>>()
+
+        fun isReachable(from: Int, to: Int): Boolean =
+            from == to || to in cache.getOrPut(from) { successorsClosure(from) }
+
+        private fun successorsClosure(from: Int): Set<Int> {
+            val visited = HashSet<Int>()
+            val queue: java.util.Queue<Int> = LinkedList()
+            queue.add(from)
+            while (queue.isNotEmpty()) {
+                val curr = queue.poll()
+                for (succ in data.cfgSuccessors[curr].orEmpty()) {
+                    if (visited.add(succ)) queue.add(succ)
                 }
             }
+            return visited
         }
-        return false
     }
 
     /** Adds field-based DDG edges to [data]'s `ddgEdges`. Returns the number added. */

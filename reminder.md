@@ -1,6 +1,6 @@
 # CPS Reconstruction — Project Assessment Summary
 
-*(Written by Claude Fable 5.1, 2026-09-16; updated 2026-09-17 after the FlowDroid baseline run)*
+*(Written by Claude Fable 5.1, 2026-09-16; updated 2026-09-17 after the FlowDroid baseline run; updated 2026-09-18 with the LLVM direction)*
 
 The assessment is written to `CLAUDE.md` as a new section, "Project assessment (2026-09-16)", grounded in a fresh test run and ablation run rather than the existing notes. Nothing was committed.
 
@@ -27,6 +27,38 @@ The Soot port of the walk plus an in-process FlowDroid harness (`scripts/run_bas
 ## Rust transfer: the technique ports, the problem mostly does not
 
 rustc's coroutine lowering has the same three ingredients (discriminant, per-variant saved locals, `SwitchInt` at resume entry into a single body copy), and MIR is an easier target than JVM bytecode. But for the local crate rustc already exposes pre-lowering MIR, so reconstruction only matters for tools consuming `optimized_mir` from dependency crates, LLVM IR, or binaries. That niche is real. Two points strengthen the case there: Rust deliberately overlaps saved locals by liveness, so the spill-slot conflation is the normal case, and MIR marks cleanup blocks syntactically, which is easier than JVM exception tables. No Rust toolchain is installed on this machine, so none of this was checked against MIR dumps. The half-day verification step is spelled out in `CLAUDE.md`. C++20 coroutines are flagged as a case where the fast-path argument does not hold after LLVM's split.
+
+## Update 2026-09-18: direction change — journal, LLVM, general languages
+
+The professor's steer: the project has better potential as a journal paper (TOSEM/TSE) than an ISSTA submission, but it has to be done on LLVM, for languages in general. Assessment, grounded in a probe run the same day (`docs/llvm-probe/`), not just argued:
+
+**"General case on LLVM" is three lowering shapes, not one port — and that taxonomy is the journal contribution.**
+
+| Shape | Producers | Structure | Status |
+|---|---|---|---|
+| A. Frontend-lowered switch | rustc (MIR `StateTransform`), Kotlin/Native (Kotlin's own CPS lowering, LLVM backend); same shape as kotlinc/JVM and C# `MoveNext` off-LLVM | discriminant `switch` at entry, single body copy, resume cases jump in | **Verified for rustc at -O0** (`rustc 1.98.1`, two-await `async fn`, one await under an `if`): dispatch switch on `gep self,4`, states 1/2 are the "resumed after completion" dead paths, 3/4 jump into the one body copy, fast path from state 0 complete, unwind/Poisoned paths syntactically marked. The existing walk ports ~1:1. |
+| B. LLVM `CoroSplit`, switch ABI | C++20 `co_await` | ramp truncated at first suspend + `f.resume` clone with index switch + destroy/cleanup clones | Unverified (no `clang` on this machine; `pacman -S clang llvm` gives 22.1). Port = ramp fast path ++ resume clone: a two-function stitch, days not weeks. |
+| C. LLVM `CoroSplit`, retcon/async ABI | Swift `async` | no switch: one function per suspend point chained via continuation function pointers, heap async context | Unverified and genuinely new — literal CPS in machine code; reconstruction is an actual un-CPS pass (inlining a continuation chain). Hardest, and the part a JVM-only paper can't say. |
+
+Kotlin/Native is the bridge: same source, same benchmark suite, two backends — shows the technique is about the lowering, not the platform. Four frontends, one algorithm parameterized by shape, one quotient check as the correctness argument across all of them.
+
+**Carries over:** the fast-path argument and the decline criterion (it becomes the definition of shape A vs. B/C); the evaluation design (explanation-size ablation, the `spill-slot/` family — stronger on LLVM since `CoroFrame` and rustc's layout pack disjoint-lifetime saved values into one slot by design; external-tool false-positive experiment; quotient check); the benchmark suite as a spec to re-express per language; the SCAM 2022 gap and the FlowDroid result as the JVM instance.
+
+**Thrown away:** SootUp/Soot, the CPG, `TaintSlicer`, `FieldAliasTracker`. Don't rebuild them. The walk becomes an `opt` pass (C++, `-load-pass-plugin`) whose output is legal IR; measurement clients are Phasar (IFDS/IDE on LLVM — the FlowDroid analog) and SVF. "Emit reconstructed code" is free.
+
+**Two risks a journal reviewer raises first:**
+1. Optimized IR. Verified: at -O2 LLVM's `JumpThreading` clones each await site into a fast-path copy and a switch-reached copy (`chain_poll_O2.ll`). The walk still finds a complete body in the example, but the "exactly once" quotient property fails. Need a stated input point: pre-optimization IR (or a pipeline position before jump threading), or merge clones by `!dbg`. Applies to all three shapes.
+2. Evaluation maturity — a journal wants more real subjects, not fewer. Upside: LLVM corpora are cheap (tokio/hyper, cppcoro/folly, swift-nio, Kotlin/Native stdlib) with no Android/R8 problem.
+
+**First week, in order:**
+1. `sudo pacman -S clang llvm`; C++ probe (`clang++ -std=c++20 -S -emit-llvm`, before/after `-O1`) — confirm the ramp/resume split and where the index switch lives. Shape C via `swiftc` (AUR) or LLVM's own `llvm/test/Transforms/Coroutines/` retcon inputs.
+2. Kotlin/Native toolchain; compile `benchmark/straight-line/01` to LLVM IR and check shape A holds — cheapest strong result, the answer is already known for the same source on the JVM.
+3. `opt` pass skeleton + shape-A walk on `docs/llvm-probe/b.rs` at -O0. A night.
+4. Phasar over raw vs. reconstructed IR for a Rust port of `spill-slot/01` — first LLVM-side RQ2 data point.
+
+Steps 1–2 are half a day each and are the CLAUDE.md "before believing any of the above" checks.
+
+Also done 2026-09-18 (committed as `1c49c7a`): `docs/dot/` now holds the raw vs. reconstructed `.dot` for every benchmark (156 files, `scripts/collect_dots.sh`); `ReconstructionCli` exports for any method with a source or sink, so `NO-FLOW` benchmarks are visualized too; the stale `docs/exception-handling/dot/` was removed.
 
 ---
 

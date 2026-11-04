@@ -9,10 +9,13 @@ import sootup.core.jimple.common.expr.AbstractInvokeExpr
 import sootup.core.jimple.common.expr.JCastExpr
 import sootup.core.jimple.common.expr.JInstanceOfExpr
 import sootup.core.jimple.common.ref.JInstanceFieldRef
+import sootup.core.jimple.common.ref.JParameterRef
+import sootup.core.jimple.common.ref.JThisRef
 import sootup.core.jimple.common.stmt.BranchingStmt
 import sootup.core.jimple.common.stmt.FallsThroughStmt
 import sootup.core.jimple.common.stmt.JAssignStmt
 import sootup.core.jimple.common.stmt.JGotoStmt
+import sootup.core.jimple.common.stmt.JIdentityStmt
 import sootup.core.jimple.common.stmt.JIfStmt
 import sootup.core.jimple.common.stmt.JInvokeStmt
 import sootup.core.jimple.common.stmt.JReturnStmt
@@ -470,8 +473,21 @@ class SuspendChainReconstructor(private val view: JavaView) {
         }
         if (realStmts.isEmpty()) return null
 
+        // The `this`/parameter identity statements sit in the preamble, before
+        // the dispatch switch, so the walk from `case 0` never reaches them.
+        // Without them the reconstructed body has no parameter locals at all
+        // (`Body.getParameterLocals()` is empty), and every inter-procedural
+        // summary computed on it silently loses its parameters — verified to
+        // drop a real flow into a sink inside a suspending callee
+        // (benchmark/straight-line/04_sink_inside_suspending_callee.kt). They
+        // are kept as a straight-line prefix before the entry, the same thing
+        // the Soot port does with its (larger) preamble.
+        val identityStmts = body.stmts.filterIsInstance<JIdentityStmt>()
+            .filter { it.rightOp is JParameterRef || it.rightOp is JThisRef }
+
         val usedLocals = linkedSetOf<Local>()
         realStmts.forEach { collectLocals(it, usedLocals) }
+        identityStmts.forEach { collectLocals(it, usedLocals) }
 
         val freshBuilder = Body.builder()
         freshBuilder.setMethodSignature(body.methodSignature)
@@ -480,36 +496,81 @@ class SuspendChainReconstructor(private val view: JavaView) {
 
         val freshGraph: MutableStmtGraph = freshBuilder.stmtGraph
         for (stmt in realStmts) freshGraph.addNode(stmt)
-        freshGraph.setStartingStmt(entry.first())
+        for (stmt in identityStmts) freshGraph.addNode(stmt)
+        freshGraph.setStartingStmt(identityStmts.firstOrNull() ?: entry.first())
 
         for (trap in pendingTraps) {
             freshGraph.addExceptionalEdge(trap.protectedStmt, trap.exceptionType, trap.handler)
         }
 
-        val hasPlainPredecessor = mutableSetOf<Stmt>()
+        // SootUp lays a body out along its fall-through edges, so every
+        // statement may have at most one fall-through predecessor and those
+        // edges must not form a cycle — a cycle has no linear order, and
+        // StmtGraph's block iterator (Body.getStmts(), getParameterLocals())
+        // then never terminates. A fall-through edge is the plain edge out of a
+        // non-branching statement *and* successor 0 of a JIfStmt. Any
+        // fall-through edge that would break either rule goes through a
+        // synthesized `goto`. Verified on benchmark-gen spillslot/043 (two
+        // sequential `while` loops): the second loop's back-edge used to be
+        // wired as a plain edge into a head whose other predecessor was a
+        // branch edge, closing the cycle head -> if (succ 0) -> body -> head.
+        val fallThroughPred = mutableMapOf<Stmt, Stmt>()
+        val fallThroughSucc = mutableMapOf<Stmt, Stmt>()
+
+        fun closesCycle(source: Stmt, target: Stmt): Boolean {
+            var cur: Stmt? = target
+            while (cur != null) {
+                if (cur === source) return true
+                cur = fallThroughSucc[cur]
+            }
+            return false
+        }
+
+        // Incoming edge first, then the bridge's jump: putting a plain edge into
+        // a statement whose outgoing branch edges already exist drops those
+        // edges (MutableBlockStmtGraph merges the blocks and the branching
+        // tail loses its successors) — the same SootUp behaviour noted for the
+        // identity prefix below.
+        fun putFallThrough(source: Stmt, target: Stmt, connect: (Stmt) -> Unit) {
+            if (target !in fallThroughPred && !closesCycle(source, target)) {
+                connect(target)
+                fallThroughPred[target] = source
+                fallThroughSucc[source] = target
+            } else {
+                val bridge = JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo())
+                freshGraph.addNode(bridge)
+                connect(bridge)
+                freshGraph.putEdge(bridge, 0, target)
+                fallThroughPred[bridge] = source
+                fallThroughSucc[source] = bridge
+            }
+        }
+
+        // The identity prefix is wired first: adding a plain edge into an
+        // existing block head *after* that block's branch edges were put
+        // produced an invalid graph (the head block's `if` lost both
+        // successors), observed on benchmark/control/09; not minimized into a
+        // standalone SootUp repro.
+        val prefix = identityStmts + entry.first()
+        prefix.zipWithNext { a, b -> putFallThrough(a, b) { freshGraph.putEdge(a as FallsThroughStmt, it) } }
+
         for (stmt in realStmts) {
             val succs = realSuccessors[stmt].orEmpty()
             when {
                 succs.isEmpty() -> Unit // terminal statement (return/throw)
                 succs.size >= 2 -> {
                     val branching = stmt as? BranchingStmt ?: return null
-                    succs.forEachIndexed { idx, target -> freshGraph.putEdge(branching, idx, target) }
+                    succs.forEachIndexed { idx, target ->
+                        if (branching is JIfStmt && idx == 0) {
+                            putFallThrough(branching, target) { freshGraph.putEdge(branching, 0, it) }
+                        } else {
+                            freshGraph.putEdge(branching, idx, target)
+                        }
+                    }
                 }
                 else -> {
                     val source = stmt as? FallsThroughStmt ?: return null
-                    val target = succs[0]
-                    if (target !in hasPlainPredecessor) {
-                        freshGraph.putEdge(source, target)
-                        hasPlainPredecessor.add(target)
-                    } else {
-                        // target already has a plain (fall-through) predecessor — this
-                        // second incoming edge needs a branching vehicle instead, per
-                        // MutableBlockStmtGraph's "at most one plain predecessor" rule.
-                        val bridge = JGotoStmt(StmtPositionInfo.getNoStmtPositionInfo())
-                        freshGraph.addNode(bridge)
-                        freshGraph.putEdge(source, bridge)
-                        freshGraph.putEdge(bridge, 0, target)
-                    }
+                    putFallThrough(source, succs[0]) { freshGraph.putEdge(source, it) }
                 }
             }
         }

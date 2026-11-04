@@ -1,0 +1,40 @@
+diff --git a/joern-cli/frontends/jimple2cpg/src/main/scala/io/joern/jimple2cpg/astcreation/declarations/AstForMethodsCreator.scala b/joern-cli/frontends/jimple2cpg/src/main/scala/io/joern/jimple2cpg/astcreation/declarations/AstForMethodsCreator.scala
+index 514fd233d..85f8529b5 100644
+--- a/joern-cli/frontends/jimple2cpg/src/main/scala/io/joern/jimple2cpg/astcreation/declarations/AstForMethodsCreator.scala
++++ b/joern-cli/frontends/jimple2cpg/src/main/scala/io/joern/jimple2cpg/astcreation/declarations/AstForMethodsCreator.scala
+@@ -111,7 +111,7 @@ trait AstForMethodsCreator(implicit withSchemaValidation: ValidationMode) { this
+           case Some(value) =>
+             bodyStatementsInfo.unitToAsts.get(unit) match {
+               case Some(targetAsts) if targetAsts.nonEmpty =>
+-                diffGraph.addEdge(value.root.get, targetAsts.last.root.get, EdgeTypes.CFG)
++                diffGraph.addEdge(value.root.get, cfgEntry(targetAsts.last), EdgeTypes.CFG)
+               case _ =>
+                 logger.error(
+                   s"AstForMethodsCreator: Missing unit in unitToAsts: $unit (${unit.getClass.getSimpleName})"
+@@ -126,7 +126,7 @@ trait AstForMethodsCreator(implicit withSchemaValidation: ValidationMode) { this
+         (bodyStatementsInfo.unitToAsts.get(a), bodyStatementsInfo.unitToAsts.get(b)) match {
+           case (Some(aAsts), Some(bAsts)) if aAsts.nonEmpty && bAsts.nonEmpty =>
+             val aNode = aAsts.last.root.get
+-            val bNode = bAsts.last.root.get
++            val bNode = cfgEntry(bAsts.last)
+             diffGraph.addEdge(aNode, bNode, EdgeTypes.CFG)
+           case _ =>
+             logger.error(
+@@ -145,6 +145,17 @@ trait AstForMethodsCreator(implicit withSchemaValidation: ValidationMode) { this
+     }
+   }
+ 
++  /** EXPERIMENT: the first node evaluated in a statement (first AST child, recursively), so that a jump into the
++    * statement also evaluates its operands. Linking to the root skips them and loses their reaching definitions.
++    */
++  private def cfgEntry(ast: Ast): NewNode = {
++    def go(n: NewNode): NewNode = ast.edges.find(_.src == n) match {
++      case Some(e) => go(e.dst)
++      case None    => n
++    }
++    go(ast.root.get)
++  }
++
+   private def astForMethodReturn(methodDeclaration: SootMethod): NewMethodReturn = {
+     val typeFullName = registerType(sootTypeToString(methodDeclaration.getReturnType))
+     methodReturnNode(methodDeclaration, typeFullName)

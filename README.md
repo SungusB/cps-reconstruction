@@ -102,6 +102,8 @@ src/main/kotlin/com/infinity/cps/reconstruction/
   cli/           ReconstructionCli — the entry point
 benchmark/       hand-written Kotlin fixtures, one per control-flow shape
 scripts/         the ablation harness (with vs. without reconstruction)
+llvm/            the LLVM port: an opt pass for Rust and C++20 coroutines, their
+                 benchmark ports, and the Joern harness (see llvm/README.md)
 docs/            deeper write-ups for specific reconstruction cases (currently:
                  exception-handling/, the try/catch case — mechanism, literature,
                  evaluation) and dot/, the raw vs. reconstructed CPG of every
@@ -207,8 +209,8 @@ What reconstruction demonstrably changes is **how much of the method a
 taint analyzer has to look at to explain the same flow**: `scripts/compare_ablation.py`
 reports `methodStats[].statementCount` (CPG size) per method from each
 `summary.json`. On the methods reconstruction actually rewrites, this
-shrinks substantially — e.g. `singleHop` goes from 49 to 23 statements,
-`identityChain` from 70 to 42 — because label writes, spill-field
+shrinks substantially — e.g. `singleHop` goes from 49 to 9 statements,
+`identityChain` from 70 to 12 — because label writes, spill-field
 reads/writes, the suspend-check `if`, and the switch itself no longer have
 to be traversed or read to reach the same conclusion. Methods reconstruction
 doesn't touch (general-case-unsupported, or not a coroutine state machine at
@@ -243,8 +245,8 @@ analyzer uses. One Soot scene per benchmark package, FlowDroid's default
 (keyed on the classes that *declare* them, not the `StringsKt` facade — a
 rule keyed on the facade never matches).
 
-Result on the current 36-file suite: **FlowDroid reports 20 flows with
-reconstruction and 23 without.** No flow is found only with reconstruction;
+Result on the current 41-file suite: **FlowDroid reports 21 flows with
+reconstruction and 24 without.** No flow is found only with reconstruction;
 the 3 found only without are exactly `benchmark/spill-slot/01`–`03`, whose
 ground truth is `NO-FLOW`. Every `FLOW` benchmark reports the same
 source→sink pair in both modes. The mechanism was verified rather than
@@ -278,28 +280,53 @@ below a second (fixed scene-setup overhead dominates).
 What is established, with the evidence behind it:
 
 - **Reconstruction works on every shape in the suite except `finally`.**
-  36 of 37 suspend state machines across 36 benchmark files reconstruct;
-  the one decline is a suspend call inside `finally`, which kotlinc
+  38 of 39 suspend state machines across 41 benchmark files reconstruct
+  (and 186 of 189 in the 121-program generated suite, `benchmark-gen/`).
+  Every decline is a suspend call inside `finally`, which kotlinc
   compiles to a self-referential trap the walk deliberately refuses
-  (`docs/exception-handling/README.md`). Each shape was checked against
+  (`docs/exception-handling/README.md`), or a nested `try` (one generated
+  program); both are declined by design. Each shape was checked against
   `javap` before being trusted.
 - **It removes real false positives from a production analysis.** FlowDroid
   on raw coroutine bytecode reports 3 flows that do not exist (spill-slot
   conflation, `benchmark/spill-slot/`); on reconstructed bytecode it does
   not, and it loses no true flow. The mechanism was confirmed by ablating
-  the resumption entry point.
-- **It shrinks what an analysis has to look at.** −78.8% statements on
-  reconstructed methods for the in-house CPG; 40–70× fewer IFDS edge
-  propagations for FlowDroid on the affected packages.
+  the resumption entry point. On the 115 generated Kotlin programs the same
+  holds at scale: false positives drop from 18 to 5, including **all 9
+  spill-slot programs**. The price is 2 real flows lost with
+  reconstruction (64 → 62 TP). Their cause is verified, and it's a harness
+  issue, not reconstruction: the port's in-memory bodies skip Soot's `jb`
+  normalization, and FlowDroid misses aliasing through the local copies left
+  behind. `baseline --normalize` recovers both but is not yet the default
+  (`docs/bugs-found/README.md` A12, B19).
+- **It shrinks what an analysis has to look at.** −76.7% statements on
+  reconstructed methods for the in-house CPG (−87.1% on the generated
+  suite); 40–70× fewer IFDS edge propagations for FlowDroid on the affected
+  hand-written packages, and 599M vs 7.9M in total on the generated suite.
+  There, the 12 largest raw programs needed ~5.9 GB of heap against
+  0.15–0.8 GB reconstructed, and 4 raw solves were stopped early by
+  FlowDroid's memory watcher, against none reconstructed. This is the first
+  cost result that is not dominated by setup or path-building time, but it
+  comes from synthetic programs.
+- **The defects found along the way are catalogued** in
+  `docs/bugs-found/README.md`: in this project's analysis and
+  reconstruction, in SootUp/Soot/FlowDroid/Joern/Ghidra, and in the
+  harness, each with its effect on the reported numbers. Most failed
+  silently, and each was caught only by a benchmark written for that
+  mechanism.
 
 What is not established, in the order it matters:
 
-1. **Generality.** Every subject is a hand-written single-method file, and
+1. **Generality.** Every subject is synthetic (41 hand-written files, 121
+   generated programs with dynamically validated ground truth), and
    only one compiler/target (`kotlinc 2.4.20`, bytecode 52) has been
    checked. How often real code produces the spill-slot shape, what
    fraction of real state machines reconstruct, and what new decline
-   reasons appear are all unmeasured. Shapes known to be unexercised: a
-   user `when` inside a suspend body, `suspendCoroutine` /
+   reasons appear are all unmeasured. A user `when` on an `Int` inside a
+   suspend body, with suspend calls in its arms, is exercised by the
+   generated `whenswitch/` family (5 programs, all reconstruct, all
+   verdicts correct). Shapes known to be unexercised: `when` on an enum or
+   `String`, `suspendCoroutine` /
    `suspendCancellableCoroutine`, tail-call suspend functions, `inline` /
    `crossinline` suspend lambdas, `CancellationException` under
    try/catch, and anything post-R8/D8.
@@ -308,12 +335,24 @@ What is not established, in the order it matters:
    synthesis have no unit tests, and the classic-Soot port has none at
    all. A mechanical check that each reconstruction is the
    bookkeeping-quotient of its original — every real statement kept once,
-   every edge backed by an original path — would replace the hand-checking
-   and has not been written.
-3. **A second external tool.** Only FlowDroid has been run. The
-   reconstructed `.class` files a second bytecode-level tool needs
-   (FindSecBugs, Joern, Doop) are emitted, but no such comparison exists
-   yet, and it has not been checked that the emitted classes verify.
+   every edge backed by an original path — would replace the hand-checking;
+   it exists for the LLVM port (built into the pass, `llvm/README.md`) but
+   not yet for the JVM walk.
+3. **A second external tool — Joern, done; read the mechanism before the
+   numbers.** On raw vs. reconstructed classes, upstream Joern
+   (`jimple2cpg`) finds 9 vs. 25 of the 29 real flows, with no false
+   positive in either mode. The gain is real but it is reconstruction
+   sidestepping a Joern CFG defect (a branch edge skips the target
+   statement's operands) that kotlinc's `COROUTINE_SUSPENDED` check
+   triggers at every suspension point — reproduced in plain Java and
+   confirmed by patching Joern, after which raw and reconstructed find the
+   same 25 flows and reconstruction removes one false positive (a taint
+   path through the shared sentinel; patched run predates the 4 newest
+   benchmarks). Graph size −27.1%. On the 115 generated Kotlin programs the
+   same defect leaves upstream Joern nearly blind on raw bytecode (3 of 64
+   real flows) against 59 of 64 after reconstruction, with 5 false
+   positives that raw bytecode hides because Joern sees almost nothing there. The emitted
+   classes pass `java -Xverify:all`. Full account: `llvm/README.md`.
 4. **Cost.** No defensible wall-time result: the harness's per-package
    timings are dominated by scene setup on small inputs and by FlowDroid's
    path-builder timeout (identical in both modes) on large ones. Edge

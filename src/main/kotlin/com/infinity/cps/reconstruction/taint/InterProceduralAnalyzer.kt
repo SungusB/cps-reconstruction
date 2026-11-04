@@ -3,8 +3,10 @@ package com.infinity.cps.reconstruction.taint
 import com.infinity.cps.reconstruction.cpg.CpgData
 import com.infinity.cps.reconstruction.cpg.FieldAliasTracker
 import sootup.core.jimple.basic.Local
+import sootup.core.jimple.common.expr.AbstractInvokeExpr
 import sootup.core.jimple.common.ref.JInstanceFieldRef
 import sootup.core.jimple.common.stmt.JAssignStmt
+import sootup.core.jimple.common.stmt.Stmt
 import sootup.core.model.Body
 import sootup.core.signatures.MethodSignature
 import sootup.java.core.views.JavaView
@@ -93,8 +95,12 @@ class InterProceduralAnalyzer {
 
         val forwardAdj = linkedMapOf<Int, MutableList<Int>>()
         for (i in cpg.stmtLabels.indices) forwardAdj[i] = mutableListOf()
+        // DDG only, as in TaintSlicer.slice(): a summary built over CDG edges
+        // too says "parameter reaches sink" whenever a sink merely executes
+        // under a branch on the parameter (an implicit flow), and the caller
+        // then reports it as an explicit one. Verified false positive:
+        // benchmark/control/07_tainted_branch_in_callee_sink.kt.
         for (edge in cpg.ddgEdges) forwardAdj[edge.src]?.add(edge.dst)
-        for (edge in cpg.cdgEdges) forwardAdj[edge.src]?.add(edge.dst)
 
         val sourceStmts = linkedSetOf<Int>()
         for (i in cpg.stmtLabels.indices) {
@@ -160,11 +166,17 @@ class InterProceduralAnalyzer {
         summary: TaintSummary,
     ) {
         for (paramIdx in paramList.indices) {
-            val paramName = paramList[paramIdx].toString()
+            val param = paramList[paramIdx]
 
+            // Statements that define or use the parameter local itself. This
+            // used to be a substring match on the rendered label, which made a
+            // parameter named `p` "occur" in every `println`/`PrintStream`
+            // statement — verified false positive:
+            // benchmark/control/08_short_param_name_callee_sink.kt.
             val startPoints = linkedSetOf<Int>()
             for (i in cpg.stmtLabels.indices) {
-                if (cpg.stmtLabels[i].contains(paramName)) startPoints.add(i)
+                val stmt = cpg.indexToStmt[i] ?: continue
+                if (definesOrUses(stmt, param)) startPoints.add(i)
             }
 
             val slice = linkedSetOf<Int>()
@@ -182,6 +194,15 @@ class InterProceduralAnalyzer {
                 summary.paramToReturn.add(paramIdx)
             }
         }
+    }
+
+    private fun definesOrUses(stmt: Stmt, local: Local): Boolean {
+        if (stmt.def.orElse(null) == local) return true
+        for (value in stmt.uses.toList()) {
+            if (value == local) return true
+            if (value is AbstractInvokeExpr && value.args.any { it == local }) return true
+        }
+        return false
     }
 
     private fun collectSourceToReturn(
